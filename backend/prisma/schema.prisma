@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  role          Role           @default(TEACHER)
+  lessons       Lesson[]
+  refreshTokens RefreshToken[]
+  isDeleted     Boolean        @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.VarChar(500)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  type      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email, type])
+}
+
+model Lesson {
+  id             String    @id @default(uuid())
+  userId         String?
+  user           User?     @relation(fields: [userId], references: [id])
+  title          String
+  topic          String?
+  level          String
+  targetDuration Int       @default(45)
+  objectives     String?   @db.Text
+  bookId         String?
+  blocks         Block[]
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Block {
+  id          String   @id @default(uuid())
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  type        String
+  title       String
+  content     String   @db.Text
+  duration    Int      @default(10)
+  order       Int      @default(0)
+  isCollapsed Boolean  @default(false)
+  data        Json?
+  isDeleted   Boolean  @default(false)
+}
+
+model Book {
+  id        String    @id @default(uuid())
+  title     String    // VD: Menschen A1.1, Schritte Plus
+  publisher String    // VD: Hueber, Klett
+  level     String    // VD: A1, A2, B1
+  coverUrl  String?
+  lektions  Lektion[]
+  createdAt DateTime  @default(now())
+}
+
+model Lektion {
+  id            String           @id @default(uuid())
+  bookId        String
+  book          Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  lektionNumber Int              // VD: Bài số 1, 2, 3
+  title         String           // VD: Freizeit und Hobbys
+  theme         String?          // Chủ đề chính
+  contents      LektionContent[] 
+}
+
+model LektionContent {
+  id        String   @id @default(uuid())
+  lektionId String
+  lektion   Lektion  @relation(fields: [lektionId], references: [id], onDelete: Cascade)
+  type      String   
+  data      Json     
+}
+
+model CaseMemory {
+  id                  String   @id @default(uuid())
+  provider            String
+  level               String
+  activeSkills        String   
+  topic               String
+  title               String
+  domain              String
+  subdomain           String
+  context             String
+  situationType       String
+  conflictType        String
+  roles               String   
+  location            String
+  options             String
+  fingerprintHash     String   @unique
+  semanticFingerprint String
+  createdAt           DateTime @default(now())
+
+  @@index([provider, level])
+  @@index([fingerprintHash])
+}
