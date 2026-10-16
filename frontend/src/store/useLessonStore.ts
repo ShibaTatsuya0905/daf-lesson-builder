@@ -189,6 +189,7 @@ export const LESSON_TEMPLATES: LessonTemplate[] = [
 ];
 
 interface LessonStore {
+  activeTab: 'overview' | 'my_lessons' | 'editor';
   lessonInfo: LessonInfo;
   blocks: Block[];
   templates: LessonTemplate[];
@@ -198,6 +199,7 @@ interface LessonStore {
   theme: 'light' | 'dark';
   audioSpeed: number;
   fontSize: 'normal' | 'medium' | 'large';
+  isLoadingLesson: boolean; // Trạng thái tải bài giảng
 
   isSidebarOpen: boolean;
   isQuickToolbarOpen: boolean;
@@ -212,10 +214,13 @@ interface LessonStore {
   isSpeakingModalOpen: boolean;
   isSettingsModalOpen: boolean;
   isPdfCutterModalOpen: boolean;
+  isAcademicModalOpen: boolean;
+  academicModalTab: 'classes' | 'evaluations' | 'schedules';
 
   history: { lessonInfo: LessonInfo; blocks: Block[] }[];
   historyIndex: number;
 
+  setActiveTab: (tab: 'overview' | 'my_lessons' | 'editor') => void;
   setViewMode: (mode: ViewMode) => void;
   toggleTheme: () => void;
   setAudioSpeed: (speed: number) => void;
@@ -244,6 +249,8 @@ interface LessonStore {
   closeSettingsModal: () => void;
   openPdfCutterModal: () => void;
   closePdfCutterModal: () => void;
+  openAcademicModal: (tab?: 'classes' | 'evaluations' | 'schedules') => void;
+  closeAcademicModal: () => void;
 
   updateLessonInfo: (fields: Partial<LessonInfo>) => void;
   addBlock: (type: string, title?: string, duration?: number, initialContent?: string, tags?: string[], initialData?: BlockContentData) => void;
@@ -313,6 +320,7 @@ export const useLessonStore = create<LessonStore>((set, get) => {
   const initialFontSize = (localStorage.getItem('daf_font_size') as 'normal' | 'medium' | 'large') || 'normal';
 
   return {
+    activeTab: 'overview',
     lessonInfo: DEFAULT_LESSON_INFO,
     blocks: [],
     templates: LESSON_TEMPLATES,
@@ -322,6 +330,7 @@ export const useLessonStore = create<LessonStore>((set, get) => {
     theme: initialTheme,
     audioSpeed: initialSpeed,
     fontSize: initialFontSize,
+    isLoadingLesson: false,
 
     isSidebarOpen: true,
     isQuickToolbarOpen: true,
@@ -336,10 +345,13 @@ export const useLessonStore = create<LessonStore>((set, get) => {
     isSpeakingModalOpen: false,
     isSettingsModalOpen: false,
     isPdfCutterModalOpen: false,
+    isAcademicModalOpen: false,
+    academicModalTab: 'classes',
 
     history: [{ lessonInfo: DEFAULT_LESSON_INFO, blocks: [] }],
     historyIndex: 0,
 
+    setActiveTab: (tab) => set({ activeTab: tab }),
     setViewMode: (viewMode) => set({ viewMode }),
 
     toggleTheme: () => {
@@ -396,6 +408,8 @@ export const useLessonStore = create<LessonStore>((set, get) => {
     closeSettingsModal: () => set({ isSettingsModalOpen: false }),
     openPdfCutterModal: () => set({ isPdfCutterModalOpen: true }),
     closePdfCutterModal: () => set({ isPdfCutterModalOpen: false }),
+    openAcademicModal: (tab = 'classes') => set({ isAcademicModalOpen: true, academicModalTab: tab }),
+    closeAcademicModal: () => set({ isAcademicModalOpen: false }),
 
     updateLessonInfo: (fields) => {
       const updated = { ...get().lessonInfo, ...fields };
@@ -590,12 +604,13 @@ export const useLessonStore = create<LessonStore>((set, get) => {
       }));
 
       pushHistoryAndSave(newInfo, newBlocks);
-      set({ isTemplateModalOpen: false });
+      set({ isTemplateModalOpen: false, activeTab: 'editor' });
     },
     
     createEmptyLesson: () => {
       const emptyInfo: LessonInfo = { title: 'Neue Lektion', topic: '', level: 'A1', objectives: '', targetDuration: 45 };
       pushHistoryAndSave(emptyInfo, []);
+      set({ activeTab: 'editor' });
     },
 
     importFromBook: async (lektionId: string) => {
@@ -659,7 +674,7 @@ export const useLessonStore = create<LessonStore>((set, get) => {
         };
 
         pushHistoryAndSave(newInfo, newBlocks);
-        set({ isSmartBookModalOpen: false });
+        set({ isSmartBookModalOpen: false, activeTab: 'editor' });
       } catch (err) {
         console.error(err);
       }
@@ -676,15 +691,32 @@ export const useLessonStore = create<LessonStore>((set, get) => {
       } catch (err) {}
     },
 
+    // SỬA LỖI TẠI ĐÂY: Thêm loading và bắt lỗi khi bấm mở giáo án
     loadLessonById: async (id: string) => {
+      set({ isLoadingLesson: true });
       try {
         const res = await apiRequest(`/lessons/${id}`);
         if (res.ok) {
           const data = await res.json();
           const { blocks, ...info } = data;
-          set({ lessonInfo: info, blocks: blocks || [], saveStatus: 'saved', historyIndex: 0, history: [{ lessonInfo: info, blocks: blocks || [] }] });
+          set({ 
+            lessonInfo: info, 
+            blocks: blocks || [], 
+            saveStatus: 'saved', 
+            historyIndex: 0, 
+            history: [{ lessonInfo: info, blocks: blocks || [] }],
+            activeTab: 'editor',
+            viewMode: 'teacher' // Đảm bảo luôn chuyển qua tab Editor và view giáo viên
+          });
+        } else {
+          alert('Phiên đăng nhập đã hết hạn hoặc giáo án không tồn tại. Vui lòng tải lại trang.');
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error('Lỗi khi tải giáo án:', err);
+        alert('Có lỗi xảy ra khi kết nối máy chủ. Vui lòng kiểm tra mạng.');
+      } finally {
+        set({ isLoadingLesson: false });
+      }
     },
 
     deleteLessonFromCloud: async (id: string) => {
@@ -693,6 +725,7 @@ export const useLessonStore = create<LessonStore>((set, get) => {
         get().fetchMyLessons();
         if (get().lessonInfo.id === id) {
           get().createEmptyLesson();
+          set({ activeTab: 'my_lessons' });
         }
       } catch (err) {}
     },

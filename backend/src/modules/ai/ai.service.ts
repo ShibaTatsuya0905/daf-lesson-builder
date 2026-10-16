@@ -56,9 +56,10 @@ export interface SpeakingExamSession {
 export class AIService {
   private ai: GoogleGenerativeAI;
   private fileManager: GoogleAIFileManager;
+  // Trả lại đúng danh sách model bạn đang dùng
   private modelPool = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-3.8-flash', 'gemini-3.5-flash'];
   private inMemoryFallbackCases: CaseMemoryEntry[] = [];
-  private exponentialBackoffDelays = [1500, 3000, 6000];
+  private exponentialBackoffDelays = [2000, 5000, 10000];
 
   constructor() {
     this.ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -111,12 +112,13 @@ export class AIService {
           
           console.log(`🤖 [AI Engine] Đang kết nối model: ${modelName} (Lần thử ${attempt + 1}/3)...`);
 
+          // SỬA LỖI ABORT Ở ĐÂY: Tăng timeout lên 5 phút (300000ms) để API không bị ngắt giữa chừng
           const model = this.ai.getGenerativeModel(
             {
               model: modelName,
               ...(jsonMode ? { generationConfig: { responseMimeType: 'application/json' } } : {}),
             },
-            { timeout: 60000 }
+            { timeout: 300000 }
           );
           return await executeFn(model);
         } catch (err: any) {
@@ -125,20 +127,24 @@ export class AIService {
             console.error(`[AI Engine] Lỗi ${err.status} model ${modelName}:`, err.message);
             throw err;
           }
-          if (err.status === 404) {
-            console.warn(`[AI Engine] Model ${modelName} không phản hồi (404). Chuyển sang model kế tiếp...`);
-            break; 
+          if (err.status === 404 || err.message.includes('aborted') || err.message.includes('timeout')) {
+            console.warn(`[AI Engine] Timeout hoặc Aborted tại ${modelName}. Thử lại hoặc chuyển model...`);
+            if (attempt < 2) {
+              await this.sleep(this.exponentialBackoffDelays[attempt]);
+              continue;
+            } else {
+              break; 
+            }
           }
           if (err.status === 429 || err.status === 503) {
-            console.warn(`[AI Engine] Quá tải/Hết Quota ở ${modelName}. Chờ ${this.exponentialBackoffDelays[attempt] / 1000}s để thử lại...`);
+            console.warn(`[AI Engine] Quá tải ở ${modelName}. Chờ ${this.exponentialBackoffDelays[attempt] / 1000}s để thử lại...`);
             if (attempt < 2) {
-              await this.sleep(this.exponentialBackoffDelays[attempt] || 5000);
+              await this.sleep(this.exponentialBackoffDelays[attempt]);
               continue;
             } else {
               break;
             }
           }
-          console.error(`[AI Engine] Lỗi không xác định ở model ${modelName}:`, err.message);
           throw err;
         }
       }
@@ -401,7 +407,7 @@ Return ONLY a valid JSON object matching this schema:
         "generationFingerprint": "",
         "semanticFingerprint": "",
         "subScenariosBySkill": {
-          ${activeSkills.map(s => `"${s.toLowerCase()}": "Detailed description of the specific sub-scenario for ${s.toLowerCase()} (at least 20 chars)"`).join(',\n          ')}
+          ${activeSkills.map((s) => `"${s.toLowerCase()}": "Detailed description of the specific sub-scenario for ${s.toLowerCase()} (at least 20 chars)"`).join(',\n          ')}
         }
       },
       "scores": {
@@ -450,13 +456,12 @@ Return ONLY a valid JSON object matching this schema:
           return strongPicks[0].dna;
         } else {
           console.warn(`[Case Engine] Lần thử ${attempt}: Chưa có kịch bản nào vượt qua CEFR Validator.`);
-          evaluatedCandidates.forEach((c: any) => console.log(` - Kịch bản ${c.candidateId} bị từ chối do: ${c.selectionVerdict}`));
         }
       } catch (parseOrGenError) {
         if (attempt === 3) {
           throw parseOrGenError;
         }
-        await this.sleep(1000);
+        await this.sleep(2000);
       }
     }
 
@@ -517,7 +522,7 @@ INSTRUCTIONS:
    - If correctAnswerMode is 'boolean': options must be exactly 2 items.
    - If correctAnswerMode is 'multiple': use "correctAnswerIndices": [X, Y] with ${quizContract?.minCorrectAnswers || 2} to ${quizContract?.maxCorrectAnswers || 3} items. Never use correctAnswerIndex.
    - If correctAnswerMode is 'single': options must have exactly ${quizContract?.optionCount || 3} choices and valid correctAnswerIndex.
-   - If correctAnswerMode is 'matching': "question" must be the statement/premise to match, and provide "correctMatch": "...".
+   - If correctAnswerMode is 'matching': "question" must be the text identifier (e.g. Text 1), provide 8 to 10 choices in "options" (e.g. ["a) ...", "b) ..."]), and provide "correctMatch": "...".
    - If correctAnswerMode is 'text': provide "correctAnswer": "..." with the exact short answer key.
 5. Output 100% valid JSON. Do not use unescaped double quotes inside strings.
 
@@ -529,10 +534,10 @@ Return schema:
       "repairedQuestion": {
         "id": "q1",
         "question": "Full statement or question text here...",
-        "options": ["A", "B", "C"],
+        "options": ["a) Headline A", "b) Headline B", "c) Headline C"],
         "correctAnswerIndex": 0,
         "correctAnswer": "Exact short answer keyword or phrase",
-        "correctMatch": "A",
+        "correctMatch": "a",
         "explanation": "..."
       }
     }
@@ -591,6 +596,7 @@ Return schema:
       requiredItemCount: b.data.expectedItemCount,
       contractFields: Array.from(b.contract.allowedFields),
       quizConstraints: b.contract.quiz,
+      rules: b.contract.allowedFields ? Array.from(b.contract.allowedFields) : [],
       subScenarioContext:
         caseDNA.subScenariosBySkill[b.skill.toLowerCase() as keyof typeof caseDNA.subScenariosBySkill] ||
         caseDNA.thematicUniverse,
@@ -613,17 +619,34 @@ ${JSON.stringify(taskSpecsPrompt, null, 2)}
 
 ${failedTasksContext}
 
+CRITICAL RULES FOR READING TEXT & MATCHING FORMATTING:
+- If a task is HEADLINE_MATCHING (e.g. telc B1 Lesen Teil 1):
+  * "readingText" MUST contain exactly 5 distinct short texts. Format each text with a bold label on its own line:
+    "Text 1:\\n[First short text ~60-80 words]\\n\\nText 2:\\n[Second short text]\\n\\nText 3:\\n[Third short text]\\n\\nText 4:\\n[Fourth short text]\\n\\nText 5:\\n[Fifth short text]"
+  * The "quizQuestions" array MUST have 5 items (one for each text: "question": "Text 1", "question": "Text 2", etc.).
+  * For EVERY question in "quizQuestions", the "options" array MUST contain the pool of 8 to 10 distinct headlines labeled a to h/j (e.g. ["a) Headline A", "b) Headline B", ...]).
+  * Each question must have "correctMatch" (e.g. "b") indicating the correct headline letter.
+- If a task is ADVERTISEMENT_MATCHING (e.g. telc B1 Lesen Teil 3):
+  * "readingText" MUST contain exactly 12 distinct advertisements: "Anzeige a:\\n[Ad]\\n\\nAnzeige b:\\n[Ad]... up to Anzeige l:\\n[Ad]".
+  * The "quizQuestions" MUST contain 10 items (one for each situation 11-20), and their "options" array MUST contain ["Anzeige a", "Anzeige b", ... "Anzeige l", "x (Keine Anzeige passt)"].
+- If a task is SPRACHBAUSTEINE_CLOZE (e.g. telc B1 Sprachbausteine):
+  * "readingText" MUST be the full, coherent letter with clearly numbered blanks [1], [2], ... [10]. Do NOT omit the letter text.
+- FOR ALL QUIZ QUESTIONS: YOU MUST ALWAYS PROVIDE THE CORRECT ANSWER EXPLICITLY! 
+  * If it's Multiple Choice or Single Choice: provide "correctAnswerIndex".
+  * If it's Text input: provide "correctAnswer": "word".
+
 INSTRUCTIONS:
 1. Return a JSON object with a "taskPayloads" dictionary keyed by EXACT "taskId".
 2. For each task, populate ONLY the fields declared in its "contractFields". Do NOT return metadata fields.
 3. Item constraints per task:
    - Provide EXACTLY "requiredItemCount" items if quizQuestions is required.
-   - For EVERY question object in "quizQuestions", you MUST provide a non-empty "question" field (for matching tasks, put the statement/premise to match into "question"). NEVER leave "question" empty.
+   - For EVERY question object in "quizQuestions", you MUST provide a non-empty "question" field.
+   - For MATCHING tasks, you MUST provide the available choices in "options" for each question.
    - Respect "quizConstraints" for each task:
      * If boolean: options must be 2 items.
      * If multiple: use "correctAnswerIndices": [0, 2].
-     * If single: options must match optionCount.
-     * If matching: "question" must be the statement/premise to match, and provide "correctMatch": "...".
+     * If single: options must match optionCount AND provide "correctAnswerIndex".
+     * If matching: "question" is the text identifier (e.g. "Text 1"), provide the choices in "options", and provide "correctMatch": "...".
      * If text / short answer: provide "correctAnswer": "The exact short answer keyword or phrase".
 4. If "rubric" is in contractFields (e.g. for SCHREIBEN), provide a CEFR scoring object with integers. Do NOT return null.
 5. Output 100% valid JSON. Never produce unescaped double quotes inside strings.
@@ -641,11 +664,11 @@ Return schema:
       "quizQuestions": [
         {
           "id": "q1",
-          "question": "Full statement or question text here...",
-          "options": ["A", "B", "C"],
+          "question": "Text 1",
+          "options": ["a) Headline A", "b) Headline B", "c) Headline C"],
           "correctAnswerIndex": 0,
           "correctAnswer": "Exact short answer keyword or phrase",
-          "correctMatch": "A",
+          "correctMatch": "a",
           "explanation": "..."
         }
       ],

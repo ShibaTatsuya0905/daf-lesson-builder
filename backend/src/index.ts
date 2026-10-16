@@ -8,6 +8,7 @@ import lessonRoutes from './modules/lesson/lesson.routes';
 import bookRoutes from './modules/book/book.routes';
 import aiRoutes from './modules/ai/ai.routes';
 import adminRoutes from './modules/admin/admin.routes';
+import academicRoutes from './modules/academic/academic.routes';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/lessons', lessonRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/academic', academicRoutes);
 
 async function initSuperAdmin() {
   try {

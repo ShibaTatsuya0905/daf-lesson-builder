@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLessonStore } from '../../store/useLessonStore';
-import { Clock, BookOpen, GraduationCap, Printer, ArrowLeft, Edit2, Headphones, PlayCircle, Award, PenLine, Sparkles } from 'lucide-react';
+import { Clock, BookOpen, GraduationCap, Printer, ArrowLeft, Edit2, Headphones, PlayCircle, Square, Award, PenLine, Sparkles } from 'lucide-react';
 import { exportService } from '../../services/exportService';
 import { ExtendedExamBlockData } from '../../types/examSchema';
 
@@ -12,6 +12,34 @@ const getSafeString = (val: any): string => {
     return val.text || val.question || val.statement || val.premise || val.content || val.value || JSON.stringify(val);
   }
   return String(val);
+};
+
+const formatTextWithParagraphs = (htmlOrText: string): string => {
+  if (!htmlOrText) return '';
+  let text = String(htmlOrText).trim();
+
+  if (/<(p|br|div|h[1-6]|ul|ol|li)\b/i.test(text)) {
+    return text;
+  }
+
+  text = text
+    .replace(/(Text\s+[0-9A-Z]\s*[:\(])/gi, '\n\n$1')
+    .replace(/(Anzeige\s+[a-z0-9]\s*[:\(])/gi, '\n\n$1')
+    .replace(/(Abschnitt\s+[A-Z0-9]\s*[:\(])/gi, '\n\n$1')
+    .replace(/(Person\s+[A-Z0-9]\s*[:\(])/gi, '\n\n$1')
+    .replace(/([.!?])\s+(Text\s+[0-9A-Z])/gi, '$1\n\n$2')
+    .replace(/\n{3,}/g, '\n\n');
+
+  const paragraphs = text
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  if (paragraphs.length > 1) {
+    return paragraphs.map((p) => `<p class="mb-3 leading-relaxed">${p.replace(/\n/g, '<br/>')}</p>`).join('');
+  }
+
+  return `<p class="leading-relaxed">${text.replace(/\n/g, '<br/>')}</p>`;
 };
 
 const getSafeOptionsArray = (options: any): string[] => {
@@ -46,25 +74,64 @@ const getRubricScore = (field: any): string | number => {
 };
 
 export const DocumentPreview: React.FC = () => {
-  const { lessonInfo, blocks, viewMode, setViewMode, audioSpeed } = useLessonStore();
+  const { lessonInfo, blocks, viewMode, setViewMode, audioSpeed, setActiveTab } = useLessonStore();
   const isStudentView = viewMode === 'student';
   const safeBlocks = Array.isArray(blocks) ? blocks : [];
 
-  const handleQuickEditBlock = (blockId: string) => {
+  const [playingBlockId, setPlayingBlockId] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const handleQuickEditBlock = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.speechSynthesis.cancel();
+    setPlayingBlockId(null);
     setViewMode('teacher');
+    setActiveTab('editor');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrintDocument = () => {
     exportService.exportToPdf(lessonInfo, safeBlocks, isStudentView);
   };
 
+  const toggleAudio = (text: string, blockId: string) => {
+    if (playingBlockId === blockId) {
+      window.speechSynthesis.cancel();
+      setPlayingBlockId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(getSafeString(text));
+    utterance.lang = 'de-DE';
+    utterance.rate = audioSpeed || 0.9;
+
+    const voices = window.speechSynthesis.getVoices().filter((v) => v.lang.startsWith('de'));
+    if (voices.length > 0) {
+      const randomVoice = voices[Math.floor(Math.random() * voices.length)];
+      utterance.voice = randomVoice;
+    }
+
+    utterance.onend = () => setPlayingBlockId(null);
+    utterance.onerror = () => setPlayingBlockId(null);
+
+    setPlayingBlockId(blockId);
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto my-6 px-4">
+    <div className="max-w-4xl mx-auto my-6 px-4 animate-in fade-in duration-300">
       <div className="flex items-center justify-between p-3.5 mb-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm no-print">
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setViewMode('teacher')}
+            onClick={(e) => handleQuickEditBlock(e)}
             className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors"
           >
             <ArrowLeft size={14} /> Quay lại Soạn thảo
@@ -128,7 +195,7 @@ export const DocumentPreview: React.FC = () => {
 
         <div className="space-y-8">
           {safeBlocks.map((block, idx) => {
-            const data = (block.data || {}) as (ExtendedExamBlockData & { sampleSolution?: string });
+            const data = (block.data || {}) as (ExtendedExamBlockData & { sampleSolution?: string; gapText?: string });
             const isClozeTest = data.taskType === 'SPRACHBAUSTEINE_CLOZE' || data.answerType === 'CLOZE';
             const isFreeTextWriting = data.answerType === 'FREE_TEXT' || data.responseMode === 'LONG_TEXT';
 
@@ -157,8 +224,8 @@ export const DocumentPreview: React.FC = () => {
                       <span className="text-xs text-slate-400 font-medium">{block.duration} Min</span>
                     )}
                     <button
-                      onClick={() => handleQuickEditBlock(block.id)}
-                      className="no-print opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition-all"
+                      onClick={handleQuickEditBlock}
+                      className="no-print opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition-all z-10"
                       title="Chỉnh sửa nội dung của phần này"
                     >
                       <Edit2 size={12} />
@@ -169,8 +236,8 @@ export const DocumentPreview: React.FC = () => {
 
                 {(data.instructions || block.content) && (
                   <div
-                    className="text-xs text-slate-700 dark:text-slate-300 prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: getSafeString(data.instructions || block.content) }}
+                    className="text-xs text-slate-700 dark:text-slate-300 prose prose-sm max-w-none whitespace-pre-wrap"
+                    dangerouslySetInnerHTML={{ __html: formatTextWithParagraphs(getSafeString(data.instructions || block.content)) }}
                   />
                 )}
 
@@ -178,26 +245,32 @@ export const DocumentPreview: React.FC = () => {
                   <div className="my-4 p-4 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 shadow-xs no-print">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs shrink-0">
                           <Headphones size={20} />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <h4 className="text-sm font-bold text-blue-900 dark:text-blue-300">Audio Track (Hörtext)</h4>
-                          <p className="text-[11px] text-blue-600 dark:text-blue-400">Bấm Play để nghe đoạn hội thoại bằng tiếng Đức</p>
+                          <p className="text-[11px] text-blue-600 dark:text-blue-400 truncate">Bấm Play để nghe đoạn hội thoại bằng tiếng Đức</p>
                         </div>
                       </div>
                       
                       <button
-                        onClick={() => {
-                          window.speechSynthesis.cancel();
-                          const utterance = new SpeechSynthesisUtterance(getSafeString(data.transcript));
-                          utterance.lang = 'de-DE';
-                          utterance.rate = audioSpeed || 0.9;
-                          window.speechSynthesis.speak(utterance);
-                        }}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-xs transition-transform hover:scale-105"
+                        onClick={() => toggleAudio(data.transcript!, block.id)}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold shadow-xs transition-all shrink-0 ${
+                          playingBlockId === block.id 
+                            ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
+                            : 'bg-blue-600 hover:bg-blue-700 text-white hover:scale-105'
+                        }`}
                       >
-                        <PlayCircle size={18} /> Nghe Audio
+                        {playingBlockId === block.id ? (
+                          <>
+                            <Square size={16} fill="currentColor" /> Dừng Audio
+                          </>
+                        ) : (
+                          <>
+                            <PlayCircle size={18} /> Nghe Audio
+                          </>
+                        )}
                       </button>
                     </div>
 
@@ -206,74 +279,92 @@ export const DocumentPreview: React.FC = () => {
                         <span className="text-[11px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider block mb-1">
                           Transkript (Chỉ giáo viên thấy)
                         </span>
-                        <p className="text-xs text-blue-900/80 dark:text-blue-200/80 italic leading-relaxed">
-                          "{getSafeString(data.transcript)}"
-                        </p>
+                        <div
+                          className="text-xs text-blue-900/80 dark:text-blue-200/80 italic"
+                          dangerouslySetInnerHTML={{ __html: formatTextWithParagraphs(getSafeString(data.transcript)) }}
+                        />
                       </div>
                     )}
                   </div>
                 )}
 
-                {data.readingText && (
+                {data.readingText && !isClozeTest && (
                   <div
                     className="p-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs leading-relaxed text-slate-800 dark:text-slate-200"
-                    dangerouslySetInnerHTML={{ __html: getSafeString(data.readingText) }}
+                    dangerouslySetInnerHTML={{ __html: formatTextWithParagraphs(getSafeString(data.readingText)) }}
                   />
                 )}
 
-                {isClozeTest && data.quizQuestions && data.quizQuestions.length > 0 && (
-                  <div className="mt-4 p-4 rounded-2xl border border-purple-200 dark:border-purple-800/80 bg-purple-50/40 dark:bg-purple-950/20 space-y-3">
-                    <span className="text-xs font-bold text-purple-900 dark:text-purple-300 block">
-                      Antwortbogen: Sprachbausteine (Phiếu chọn đáp án đục lỗ):
-                    </span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                      {data.quizQuestions.map((q: any, qIdx: number) => {
-                        const questionLabel = getSafeString(q.question).replace(/Lücke\s*/i, '').trim() || `Lücke ${qIdx + 1}`;
-                        const safeOpts = getSafeOptionsArray(q.options);
+                {isClozeTest && (
+                  <div className="space-y-4">
+                    {(data.gapText || data.readingText) && (
+                      <div
+                        className="p-5 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl text-xs leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm"
+                        dangerouslySetInnerHTML={{ __html: formatTextWithParagraphs(getSafeString(data.gapText || data.readingText)) }}
+                      />
+                    )}
+                    
+                    {data.quizQuestions && data.quizQuestions.length > 0 && (
+                      <div className="mt-4 p-4 rounded-2xl border border-purple-200 dark:border-purple-800/80 bg-purple-50/40 dark:bg-purple-950/20 space-y-2.5">
+                        <span className="text-xs font-bold text-purple-900 dark:text-purple-300 block mb-2">
+                          Antwortbogen: Sprachbausteine (Phiếu chọn đáp án đục lỗ):
+                        </span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                          {data.quizQuestions.map((q: any, qIdx: number) => {
+                            const questionLabel = getSafeString(q.question).replace(/Lücke\s*/i, '').trim() || `${qIdx + 1}`;
+                            const safeOpts = getSafeOptionsArray(q.options);
 
-                        return (
-                          <div key={q.id || qIdx} className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between text-xs">
-                            <span className="font-bold text-slate-800 dark:text-slate-200 min-w-[70px]">
-                              {questionLabel}
-                            </span>
-                            <div className="flex items-center gap-1.5 flex-1 justify-end flex-wrap">
-                              {safeOpts.map((opt: string, optIdx: number) => {
-                                const isCorrect = !isStudentView && optIdx === q.correctAnswerIndex;
-                                return (
-                                  <span
-                                    key={optIdx}
-                                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
-                                      isCorrect
-                                        ? 'bg-green-100 text-green-800 dark:bg-green-950/80 dark:text-green-300 border-green-500 font-bold'
-                                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
-                                    }`}
-                                  >
-                                    {opt}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                            return (
+                              <div key={q.id || qIdx} className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between text-xs shadow-xs">
+                                <span className="font-bold text-slate-800 dark:text-slate-200 min-w-[70px]">
+                                  {q.question ? (q.question.includes('Lücke') ? q.question : `Lücke ${questionLabel}`) : `Lücke ${qIdx + 1}`}
+                                </span>
+                                <div className="flex items-center gap-1.5 flex-1 justify-end flex-wrap">
+                                  {safeOpts.length > 0 ? (
+                                    safeOpts.map((opt: string, optIdx: number) => {
+                                      const isCorrect = !isStudentView && optIdx === q.correctAnswerIndex;
+                                      return (
+                                        <span
+                                          key={optIdx}
+                                          className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                                            isCorrect
+                                              ? 'bg-green-100 text-green-800 dark:bg-green-950/80 dark:text-green-300 border-green-500 font-bold'
+                                              : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                                          }`}
+                                        >
+                                          {opt}
+                                        </span>
+                                      );
+                                    })
+                                  ) : (
+                                    <span className="font-bold text-green-600 dark:text-green-400">
+                                      {getSafeString(q.correctMatch || q.correctAnswer || q.answer)}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {!isClozeTest && !isFreeTextWriting && data.quizQuestions && data.quizQuestions.length > 0 && (
                   <div className="space-y-3">
                     {data.quizQuestions.map((q: any, qIdx: number) => {
-                      const isInputText = data.responseMode === 'INPUT_TEXT';
+                      const isInputText = data.responseMode === 'INPUT_TEXT' || data.answerType === 'SHORT_ANSWER' || data.answerType === 'SHORT_TEXT';
                       const safeOpts = getSafeOptionsArray(q.options);
-                      const isPureMatching = data.answerType === 'MATCHING' && safeOpts.length === 0 && (q.correctMatch || q.match);
+                      const isPureMatching = data.answerType === 'MATCHING' && safeOpts.length === 0;
 
                       return (
-                        <div key={q.id || qIdx} className="p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl text-xs space-y-2.5">
-                          <p className="font-bold text-slate-900 dark:text-white">
+                        <div key={q.id || qIdx} className="p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl text-xs space-y-2.5 mb-3">
+                          <p className="font-bold text-slate-900 dark:text-white leading-relaxed">
                             {qIdx + 1}. {getSafeString(q.question)}
                           </p>
 
-                          {isInputText || isPureMatching ? (
+                          {isInputText ? (
                             <div className="mt-2">
                               {isStudentView ? (
                                 <div className="w-full h-10 border-b-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 rounded-t-md"></div>
@@ -284,12 +375,35 @@ export const DocumentPreview: React.FC = () => {
                                 </div>
                               )}
                             </div>
+                          ) : isPureMatching ? (
+                            <div className="mt-2.5">
+                              {isStudentView ? (
+                                <div className="flex flex-wrap items-center gap-1.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40">
+                                  <span className="text-[11px] text-slate-400 font-medium mr-2">Wähle passende Überschrift:</span>
+                                  {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'].map((letter) => (
+                                    <button
+                                      key={letter}
+                                      type="button"
+                                      className="w-7 h-7 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-blue-500 hover:text-blue-600 transition-colors"
+                                    >
+                                      {letter}
+                                    </button>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="p-2.5 rounded-xl border border-green-500 bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-300 text-xs font-bold flex items-center gap-2">
+                                  <span className="text-[10px] text-slate-500 font-normal uppercase">Lösung:</span>
+                                  <span>{getSafeString(q.correctMatch || q.correctAnswer || 'Keine Angabe')}</span>
+                                </div>
+                              )}
+                            </div>
                           ) : (
                             <div className="flex flex-col sm:flex-row flex-wrap gap-2 pl-1 mt-2">
                               {safeOpts.map((opt: string, optIdx: number) => {
                                 let displayOpt = opt;
                                 let prefix = '';
 
+                                // KIỂM TRA PREFIX CHUẨN (Hỗ trợ in thường a, b, c)
                                 if (!displayOpt || displayOpt.trim() === '') {
                                   if (data.answerType === 'TRUE_FALSE') {
                                     displayOpt = optIdx === 0 ? 'Richtig' : 'Falsch';
@@ -299,26 +413,44 @@ export const DocumentPreview: React.FC = () => {
                                     displayOpt = `Option ${String.fromCharCode(65 + optIdx)}`;
                                   }
                                 } else {
-                                  if (data.answerType !== 'TRUE_FALSE' && data.answerType !== 'YES_NO' && !/^[A-Z][\)\.]\s/.test(displayOpt)) {
-                                    prefix = `${String.fromCharCode(65 + optIdx)}) `;
+                                  // SỬA LỖI REGEX 2 CHỮ CÁI (Chỉ kiểm tra a-z, A-Z)
+                                  if (data.answerType !== 'TRUE_FALSE' && data.answerType !== 'YES_NO' && !/^[a-zA-Z][\)\.]\s/.test(displayOpt)) {
+                                    prefix = `${String.fromCharCode(97 + optIdx)}) `; // Sử dụng chữ thường cho đẹp
                                   }
                                 }
 
-                                const isCorrect = !isStudentView && optIdx === q.correctAnswerIndex;
+                                // KIỂM TRA ĐÁP ÁN ĐÚNG THÔNG MINH HƠN
+                                const isMultiple = Array.isArray(q.correctAnswerIndices);
+                                const targetKey = getSafeString(q.correctMatch || q.correctAnswer || q.answer).toLowerCase().trim().replace(/[\)\.]/g, '');
+                                
+                                let isMatchedByString = false;
+                                if (targetKey) {
+                                  const cleanOpt = displayOpt.toLowerCase().trim();
+                                  if (cleanOpt.startsWith(`${targetKey})`)) isMatchedByString = true;
+                                  else if (cleanOpt === targetKey) isMatchedByString = true;
+                                  else if (targetKey === String.fromCharCode(97 + optIdx)) isMatchedByString = true;
+                                  else if (targetKey.length > 2 && cleanOpt.includes(targetKey)) isMatchedByString = true;
+                                }
+
+                                const isCorrect = !isStudentView && (
+                                  optIdx === q.correctAnswerIndex ||
+                                  (isMultiple && q.correctAnswerIndices.includes(optIdx)) ||
+                                  isMatchedByString
+                                );
 
                                 return (
                                   <div
                                     key={optIdx}
                                     className={`flex-1 min-w-[200px] p-2.5 rounded-xl border transition-colors flex items-start ${
                                       isCorrect
-                                        ? 'border-green-500 bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-300 font-bold'
+                                        ? 'border-green-500 bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-300 font-bold shadow-xs ring-1 ring-green-500'
                                         : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'
                                     }`}
                                   >
                                     <span className={`shrink-0 inline-block w-4 h-4 rounded-full border mr-2 align-middle text-center text-[10px] flex items-center justify-center ${isCorrect ? 'border-green-500 bg-green-500 text-white' : 'border-slate-400'}`}>
                                       {isCorrect ? '✓' : ''}
                                     </span>
-                                    <span><strong className="mr-1 text-slate-900 dark:text-slate-100">{prefix}</strong>{displayOpt}</span>
+                                    <span className="whitespace-pre-wrap"><strong className="mr-1 text-slate-900 dark:text-slate-100">{prefix}</strong>{displayOpt}</span>
                                   </div>
                                 );
                               })}
@@ -326,7 +458,7 @@ export const DocumentPreview: React.FC = () => {
                           )}
 
                           {!isStudentView && q.explanation && (
-                            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-blue-700 dark:text-blue-300">
+                            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
                               <strong>💡 Giải thích:</strong> {getSafeString(q.explanation)}
                             </div>
                           )}
@@ -343,7 +475,10 @@ export const DocumentPreview: React.FC = () => {
                         <span className="font-extrabold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
                           <Sparkles size={15} /> Musterlösung (Bài viết mẫu đạt điểm tối đa của giáo viên):
                         </span>
-                        <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800/80 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: getSafeString(data.sampleSolution) }} />
+                        <div
+                          className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800/80 italic leading-relaxed whitespace-pre-wrap"
+                          dangerouslySetInnerHTML={{ __html: formatTextWithParagraphs(getSafeString(data.sampleSolution)) }}
+                        />
                       </div>
                     )}
 

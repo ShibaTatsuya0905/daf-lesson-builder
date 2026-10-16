@@ -1,50 +1,19 @@
 import React from 'react';
 import {
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-  RotateCcw,
-  RotateCw,
-  Sparkles,
-  Eye,
-  GraduationCap,
-  Download,
-  RefreshCw,
-  FileCheck2,
-  Mic,
-  Moon,
-  Sun,
-  Settings,
-  Save,
-  Scissors
+  Clock, CheckCircle2, AlertCircle, Loader2, RotateCcw, RotateCw, 
+  Sparkles, Eye, GraduationCap, Download, FileCheck2, Mic, 
+  Moon, Sun, Settings, Save, Scissors, Check, RefreshCw
 } from 'lucide-react';
 import { useLessonStore } from '../../store/useLessonStore';
 
 export const LessonHeader: React.FC = () => {
   const {
-    lessonInfo,
-    updateLessonInfo,
-    blocks,
-    saveStatus,
-    undo,
-    redo,
-    historyIndex,
-    history,
-    viewMode,
-    setViewMode,
-    theme,
-    toggleTheme,
-    openAIModal,
-    openExportModal,
-    openExamModal,
-    openSpeakingModal,
-    openSettingsModal,
-    openPdfCutterModal,
-    triggerAutosave,
-    createEmptyLesson,
+    lessonInfo, updateLessonInfo, blocks, saveStatus, undo, redo, historyIndex, history,
+    viewMode, setViewMode, theme, toggleTheme, openAIModal, openExportModal, openExamModal,
+    openSpeakingModal, openSettingsModal, openPdfCutterModal, triggerAutosave, createEmptyLesson
   } = useLessonStore();
 
+  // Logic thanh thời gian cũ của bạn
   const totalDuration = blocks.reduce((acc, b) => acc + (b.duration || 0), 0);
   const targetDuration = lessonInfo.targetDuration || 45;
   const timeDiff = targetDuration - totalDuration;
@@ -53,7 +22,7 @@ export const LessonHeader: React.FC = () => {
   const getTimeStatus = () => {
     if (totalDuration === targetDuration) {
       return {
-        badgeClass: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+        badgeClass: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20',
         text: `⏱ ${totalDuration} / ${targetDuration} Min`,
         subText: 'Optimal',
         progressColor: 'bg-emerald-500',
@@ -61,14 +30,14 @@ export const LessonHeader: React.FC = () => {
     }
     if (totalDuration > targetDuration) {
       return {
-        badgeClass: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
+        badgeClass: 'bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/20',
         text: `⚠ ${totalDuration} / ${targetDuration} Min`,
         subText: `+${totalDuration - targetDuration} Min zu viel`,
-        progressColor: 'bg-red-500',
+        progressColor: 'bg-rose-500',
       };
     }
     return {
-      badgeClass: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+      badgeClass: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20',
       text: `○ ${totalDuration} / ${targetDuration} Min`,
       subText: `Noch ${timeDiff} Min frei`,
       progressColor: 'bg-amber-500',
@@ -84,43 +53,46 @@ export const LessonHeader: React.FC = () => {
     }
   };
 
+  const iconBtnClass = "p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors";
+
   return (
-    <header className="sticky top-0 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 px-6 py-2.5 select-none transition-colors">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 px-6 py-3 select-none">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        
+        <div className="flex items-center gap-4 min-w-0">
           <button
             type="button"
             onClick={handleResetLesson}
-            className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 border border-slate-200 dark:border-slate-800 hover:border-red-200 transition-all shadow-xs"
-            title="Đặt lại toàn bộ giáo án về ban đầu"
+            className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+            title="Làm mới toàn bộ giáo án"
           >
-            <RefreshCw size={13} className="text-slate-400 group-hover:text-red-500" />
-            <span>Làm mới</span>
+            <RefreshCw size={14} />
           </button>
 
-          <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-800" />
+          <div className="h-5 w-[1px] bg-slate-200 dark:bg-slate-700" />
 
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={lessonInfo.title}
                 onChange={(e) => updateLessonInfo({ title: e.target.value })}
-                className="text-base font-extrabold text-slate-800 dark:text-slate-100 bg-transparent border-b border-transparent hover:border-slate-300 dark:hover:border-slate-700 focus:border-blue-500 focus:outline-none px-1"
+                className="text-[17px] font-black text-slate-900 dark:text-white bg-transparent border-none focus:ring-0 focus:outline-none p-0 w-full max-w-[300px] truncate placeholder:text-slate-300"
+                placeholder="Tên bài giảng..."
               />
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:ring-indigo-500/30 whitespace-nowrap">
                 {lessonInfo.level}
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-[11px] px-1 mt-0.5">
+            <div className="flex items-center gap-1.5 text-[11px] mt-1">
               {saveStatus === 'saved' && (
                 <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
                   <CheckCircle2 size={12} /> Đã lưu tự động
                 </span>
               )}
               {saveStatus === 'saving' && (
-                <span className="flex items-center gap-1 text-blue-500 font-medium">
+                <span className="flex items-center gap-1 text-indigo-500 font-medium">
                   <Loader2 size={12} className="animate-spin" /> Đang lưu...
                 </span>
               )}
@@ -133,167 +105,66 @@ export const LessonHeader: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center">
-          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${status.badgeClass}`}>
+        {/* Thanh tiến trình thời gian giữ nguyên */}
+        <div className="hidden lg:flex flex-col items-center">
+          <div className={`flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold ring-1 ${status.badgeClass}`}>
             <Clock size={13} />
             <span>{status.text}</span>
-            <span className="text-[10px] opacity-75">({status.subText})</span>
+            <span className="text-[10px] font-medium opacity-80">({status.subText})</span>
           </div>
-          <div className="w-36 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mt-1.5 overflow-hidden">
-            <div
-              className={`h-full transition-all duration-300 ${status.progressColor}`}
-              style={{ width: `${progressPercent}%` }}
-            />
+          <div className="w-40 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
+            <div className={`h-full transition-all duration-500 ${status.progressColor}`} style={{ width: `${progressPercent}%` }} />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={triggerAutosave}
-            disabled={saveStatus === 'saving'}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl border transition-all ${
-              saveStatus === 'unsaved'
-                ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm animate-pulse'
-                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700'
-            }`}
-            title="Lưu toàn bộ bài giảng ngay lập tức (Ctrl + S)"
-          >
-            {saveStatus === 'saving' ? (
-              <>
-                <Loader2 size={14} className="animate-spin text-blue-500" />
-                <span>Đang lưu...</span>
-              </>
-            ) : saveStatus === 'saved' ? (
-              <>
-                <CheckCircle2 size={14} className="text-emerald-500" />
-                <span>Đã lưu</span>
-              </>
-            ) : (
-              <>
-                <Save size={14} />
-                <span>Lưu giáo án</span>
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={openPdfCutterModal}
-            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-purple-600 border border-slate-200 dark:border-slate-800 transition-colors"
-            title="Công cụ cắt trang file PDF"
-          >
-            <Scissors size={15} />
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition-colors"
-            title={theme === 'dark' ? 'Chuyển sang Giao diện Sáng' : 'Chuyển sang Giao diện Tối'}
-          >
-            {theme === 'dark' ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} />}
-          </button>
-
-          <button
-            type="button"
-            onClick={openSettingsModal}
-            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition-colors"
-            title="Cài đặt hệ thống"
-          >
-            <Settings size={15} />
-          </button>
-
-          <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-800/60">
-            <button
-              type="button"
-              onClick={undo}
-              disabled={historyIndex <= 0}
-              className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 transition-colors"
-              title="Rückgängig (Ctrl + Z)"
-            >
-              <RotateCcw size={14} />
+        <div className="flex items-center gap-1.5">
+          {viewMode === 'teacher' && (
+            <button onClick={() => setViewMode('student')} className="hidden xl:flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-transform hover:scale-105 mr-1">
+              <Check size={14} /> Thoát sửa / Xem đề
             </button>
-            <button
-              type="button"
-              onClick={redo}
-              disabled={historyIndex >= history.length - 1}
-              className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 border-l border-slate-200 dark:border-slate-800 transition-colors"
-              title="Wiederholen (Ctrl + Shift + Z)"
-            >
-              <RotateCw size={14} />
-            </button>
+          )}
+
+          <button onClick={triggerAutosave} disabled={saveStatus === 'saving'} className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl transition-all mr-2 ${saveStatus === 'unsaved' ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200'}`}>
+            {saveStatus === 'saving' ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            <span className="hidden sm:inline">Lưu</span>
+          </button>
+
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 mr-2">
+            <button onClick={undo} disabled={historyIndex <= 0} className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 transition-colors"><RotateCcw size={14} /></button>
+            <div className="w-[1px] h-4 bg-slate-300 dark:bg-slate-600 mx-1" />
+            <button onClick={redo} disabled={historyIndex >= history.length - 1} className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 transition-colors"><RotateCw size={14} /></button>
           </div>
 
-          <button
-            type="button"
-            onClick={openExamModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 shadow-xs transition-all"
-            title="Biên soạn đề thi chuẩn A4"
-          >
-            <FileCheck2 size={15} className="text-blue-600 dark:text-blue-400" />
-            <span>Tạo đề thi</span>
+          <button onClick={openPdfCutterModal} className={iconBtnClass} title="Cắt PDF"><Scissors size={16} /></button>
+          <button onClick={openSettingsModal} className={iconBtnClass} title="Cài đặt"><Settings size={16} /></button>
+          <button onClick={toggleTheme} className={iconBtnClass} title="Giao diện">
+            {theme === 'dark' ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} />}
           </button>
 
-          <button
-            type="button"
-            onClick={openSpeakingModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 shadow-xs transition-all"
-            title="Thi Vấn đáp bằng Giọng nói với AI"
-          >
-            <Mic size={15} className="text-emerald-600 dark:text-emerald-400" />
-            <span>Thi Vấn Đáp</span>
+          <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1" />
+
+          <button onClick={openExamModal} className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20 transition-colors">
+            <FileCheck2 size={16} /> <span className="hidden xl:inline">Tạo đề thi</span>
+          </button>
+          
+          <button onClick={openSpeakingModal} className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20 transition-colors">
+            <Mic size={16} /> <span className="hidden xl:inline">Thi Vấn Đáp</span>
           </button>
 
-          <button
-            type="button"
-            onClick={openAIModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-sm transition-all"
-          >
-            <Sparkles size={14} />
-            <span>AI-Assistent</span>
+          <button onClick={openAIModal} className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm transition-all">
+            <Sparkles size={14} /> <span className="hidden xl:inline">AI-Assistent</span>
           </button>
 
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
-            <button
-              type="button"
-              onClick={() => setViewMode('teacher')}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                viewMode === 'teacher' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
-              }`}
-            >
-              Lehrer
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('student')}
-              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                viewMode === 'student' ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
-              }`}
-              title="Schüleransicht (Chế độ xem của học sinh - Ẩn đáp án)"
-            >
-              <GraduationCap size={13} />
-              <span>Schüler</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('preview')}
-              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                viewMode === 'preview' ? 'bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
-              }`}
-            >
-              <Eye size={13} />
-              <span>Vorschau</span>
-            </button>
+          <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1" />
+
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+            <button onClick={() => setViewMode('teacher')} className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${viewMode === 'teacher' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>Lehrer</button>
+            <button onClick={() => setViewMode('student')} className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${viewMode === 'student' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}><GraduationCap size={14} /> Schüler</button>
+            <button onClick={() => setViewMode('preview')} className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${viewMode === 'preview' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}><Eye size={14} /> Vorschau</button>
           </div>
 
-          <button
-            type="button"
-            onClick={openExportModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
-          >
-            <Download size={14} />
-            <span>Exportieren</span>
+          <button onClick={openExportModal} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 shadow-sm transition-colors ml-1">
+            <Download size={14} /> Export
           </button>
         </div>
       </div>

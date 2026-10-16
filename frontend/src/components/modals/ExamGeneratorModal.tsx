@@ -14,24 +14,28 @@ const BLUEPRINT_DURATIONS: Record<string, Record<string, number>> = {
     'Leseverstehen': 50,
     'Sprachbausteine': 20,
     'Hörverstehen': 30,
+    'Sprechen': 15,
     'Full': 100,
   },
   'Goethe-Zertifikat': {
     'Schreiben': 60,
     'Leseverstehen': 65,
     'Hörverstehen': 40,
+    'Sprechen': 15,
     'Full': 125,
   },
   'ÖSD': {
     'Schreiben': 60,
     'Leseverstehen': 65,
     'Hörverstehen': 40,
+    'Sprechen': 20,
     'Full': 125,
   },
   'TestDaF': {
     'Schreiben': 60,
     'Leseverstehen': 60,
     'Hörverstehen': 40,
+    'Sprechen': 35,
     'Full': 120,
   },
 };
@@ -84,6 +88,9 @@ export const ExamGeneratorModal: React.FC = () => {
     } else if (skill === 'Hörverstehen') {
       setParts(['Hörverstehen']);
       setDuration(getExactDuration(certificate, 'Hörverstehen'));
+    } else if (skill === 'Sprechen') {
+      setParts(['Sprechen']);
+      setDuration(getExactDuration(certificate, 'Sprechen'));
     } else if (skill === 'Full') {
       if (isTelc) {
         setParts(['Leseverstehen', 'Sprachbausteine', 'Schreiben']);
@@ -173,7 +180,7 @@ export const ExamGeneratorModal: React.FC = () => {
             </div>
             <div>
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Thiết Kế Đề Thi Theo Kỹ Năng Chuẩn</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Tạo đề thi chuyên biệt cho từng kỹ năng (Viết, Đọc, Nghe, Ngữ pháp)</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Tạo đề thi chuyên biệt cho từng kỹ năng (Viết, Đọc, Nghe, Nói, Ngữ pháp)</p>
             </div>
           </div>
           <button onClick={closeExamModal} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"><X size={18} /></button>
@@ -208,20 +215,7 @@ export const ExamGeneratorModal: React.FC = () => {
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
               Chọn Modul (Kỹ năng) bạn muốn tạo đề:
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => selectSingleSkill('Schreiben')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
-                  parts.length === 1 && parts[0] === 'Schreiben'
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
-                }`}
-              >
-                <span>✍️ Chỉ thi Viết</span>
-                {parts.length === 1 && parts[0] === 'Schreiben' && <Check size={14} className="text-blue-600" />}
-              </button>
-
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => selectSingleSkill('Leseverstehen')}
@@ -231,8 +225,47 @@ export const ExamGeneratorModal: React.FC = () => {
                     : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
                 }`}
               >
-                <span>📖 Chỉ thi Đọc</span>
+                <span>📖 Đọc hiểu (Lesen)</span>
                 {parts.length === 1 && parts[0] === 'Leseverstehen' && <Check size={14} className="text-blue-600" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => selectSingleSkill('Hörverstehen')}
+                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                  parts.length === 1 && parts[0] === 'Hörverstehen'
+                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                }`}
+              >
+                <span>🎧 Nghe hiểu (Hören)</span>
+                {parts.length === 1 && parts[0] === 'Hörverstehen' && <Check size={14} className="text-blue-600" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => selectSingleSkill('Schreiben')}
+                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                  parts.length === 1 && parts[0] === 'Schreiben'
+                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                }`}
+              >
+                <span>✍️ Viết (Schreiben)</span>
+                {parts.length === 1 && parts[0] === 'Schreiben' && <Check size={14} className="text-blue-600" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => selectSingleSkill('Sprechen')}
+                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                  parts.length === 1 && parts[0] === 'Sprechen'
+                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                }`}
+              >
+                <span>🗣 Nói (Sprechen)</span>
+                {parts.length === 1 && parts[0] === 'Sprechen' && <Check size={14} className="text-blue-600" />}
               </button>
 
               <button
@@ -246,38 +279,21 @@ export const ExamGeneratorModal: React.FC = () => {
                     ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
                     : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
                 }`}
-                title={!isTelc ? 'Chỉ có chứng chỉ TELC mới có phần thi Ngữ pháp riêng' : ''}
               >
-                <div className="flex flex-col">
-                  <span>📐 Chỉ thi Ngữ pháp</span>
-                  {!isTelc && <span className="text-[9px] font-normal text-slate-400">(Chỉ có ở TELC)</span>}
-                </div>
+                <span>📐 Ngữ pháp (TELC)</span>
                 {isTelc && parts.length === 1 && parts[0] === 'Sprachbausteine' && <Check size={14} className="text-blue-600" />}
               </button>
 
               <button
                 type="button"
-                onClick={() => selectSingleSkill('Hörverstehen')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
-                  parts.length === 1 && parts[0] === 'Hörverstehen'
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
-                }`}
-              >
-                <span>🎧 Chỉ thi Nghe</span>
-                {parts.length === 1 && parts[0] === 'Hörverstehen' && <Check size={14} className="text-blue-600" />}
-              </button>
-
-              <button
-                type="button"
                 onClick={() => selectSingleSkill('Full')}
-                className={`col-span-2 p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
                   parts.length > 1
                     ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
                     : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
                 }`}
               >
-                <span>{isTelc ? '📑 Đề thi Tổng hợp (Đọc + Ngữ pháp + Viết)' : '📑 Đề thi Tổng hợp (Đọc + Viết)'}</span>
+                <span>📑 Đề Tổng hợp</span>
                 {parts.length > 1 && <Check size={14} className="text-blue-600" />}
               </button>
             </div>
@@ -333,7 +349,7 @@ export const ExamGeneratorModal: React.FC = () => {
 
           <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-2.5">
             <Layers size={18} className="text-blue-600 dark:text-blue-400 shrink-0" />
-            <span>Hệ thống sẽ biên soạn chính xác <strong>100% đúng kỹ năng đã chọn</strong> theo đề thi {certificate} {level} (không bị lẫn lộn các phần khác).</span>
+            <span>Hệ thống sẽ biên soạn chính xác <strong>100% đúng kỹ năng đã chọn</strong> theo đề thi {certificate} {level}.</span>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

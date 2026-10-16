@@ -1,4 +1,4 @@
-export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'TDN3' | 'TDN4' | 'TDN5';
 export type SocialForm = 'PLENUM' | 'PARTNERARBEIT' | 'GRUPPENARBEIT' | 'EINZELARBEIT';
 export type ArticleType = 'der' | 'die' | 'das' | '-';
 export type ViewMode = 'teacher' | 'student' | 'preview';
@@ -17,7 +17,11 @@ export interface QuizQuestionItem {
   id: string;
   question: string;
   options: string[];
-  correctAnswerIndex: number;
+  correctAnswerIndex?: number;
+  correctAnswerIndices?: number[]; // Thêm mảng đáp án cho câu Multiple Choice
+  correctAnswer?: string;          // Thêm đáp án dạng text cho câu điền từ
+  correctMatch?: string;           // Thêm đáp án dạng nối cho câu Matching
+  answer?: string;                 // Biến thể đáp án do AI sinh ra
   explanation?: string;
 }
 
@@ -37,12 +41,25 @@ export interface BlockContentData {
   questions?: string[];
   sentenceStarters?: string[];
   readingText?: string;
+  gapText?: string;                // Thêm text đục lỗ cho dạng Sprachbausteine
+  sampleSolution?: string;         // Thêm bài văn mẫu cho dạng Viết / Nói
   audioUrl?: string;
   transcript?: string;
   wordBank?: string[];
   vocabulary?: VocabularyWord[];
   quizQuestions?: QuizQuestionItem[];
   flashcards?: FlashcardItem[];
+  rubric?: {                       // Thêm khung tiêu chí chấm điểm CEFR
+    taskCompletion?: number;
+    coherence?: number;
+    vocabulary?: number;
+    grammar?: number;
+    [key: string]: any;
+  };
+  taskType?: string;
+  answerType?: string;
+  responseMode?: string;
+  maxPoints?: number;
 }
 
 export interface Block {
@@ -61,7 +78,7 @@ export interface LessonInfo {
   id?: string;
   title: string;
   topic: string;
-  level: CEFRLevel;
+  level: CEFRLevel | string;
   objectives: string;
   targetDuration: number;
   createdAt?: string;
@@ -82,7 +99,7 @@ export interface LessonTemplate {
   id: string;
   name: string;
   description: string;
-  level: CEFRLevel;
+  level: CEFRLevel | string;
   duration: number;
   icon: string;
   defaultTopic: string;
