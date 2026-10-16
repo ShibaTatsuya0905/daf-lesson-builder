@@ -29,7 +29,6 @@ export function App() {
     redo, 
     triggerAutosave, 
     isAdminViewOpen, 
-    theme, 
     fontSize,
     isAcademicModalOpen,
     academicModalTab,
@@ -42,13 +41,8 @@ export function App() {
   }, [checkAuth]);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('daf_theme') || theme || 'light';
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   useEffect(() => {
     const currentSize = localStorage.getItem('daf_font_size') || fontSize || 'normal';
@@ -65,7 +59,6 @@ export function App() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Chỉ kích hoạt phím tắt lưu/undo nếu đang ở tab editor
       if (activeTab === 'editor') {
         if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
         else if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); triggerAutosave(); }
@@ -77,7 +70,7 @@ export function App() {
 
   if (isAdminViewOpen) {
     return (
-      <div className="h-screen w-screen overflow-y-auto bg-slate-50 dark:bg-slate-950 font-sans antialiased">
+      <div className="h-screen w-screen overflow-y-auto bg-chalk-canvas font-sans antialiased">
         <CustomCursor />
         <AdminDashboard />
       </div>
@@ -85,15 +78,12 @@ export function App() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 antialiased transition-colors">
+    <div className="flex h-screen w-screen overflow-hidden bg-chalk-canvas font-sans text-ink-charcoal antialiased transition-colors">
       <CustomCursor />
       <LeftSidebar />
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        
-        {/* CHỈ HIỆN HEADER KHI ĐANG Ở TAB EDITOR */}
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
         {activeTab === 'editor' && <LessonHeader />}
-
-        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 relative">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-8 relative">
           {(viewMode === 'preview' || viewMode === 'student') && activeTab === 'editor' ? (
             <DocumentPreview />
           ) : (
@@ -102,7 +92,6 @@ export function App() {
         </main>
       </div>
 
-      {/* CHỈ HIỆN TOOLBAR BÊN PHẢI KHI ĐANG Ở TAB EDITOR */}
       {activeTab === 'editor' && <RightQuickToolbar />}
 
       <AddActivityModal />
@@ -116,7 +105,6 @@ export function App() {
       <SpeakingExaminerModal />
       <SettingsModal />
       <PdfCutterModal />
-      
       <AcademicModal 
         isOpen={isAcademicModalOpen} 
         onClose={closeAcademicModal} 

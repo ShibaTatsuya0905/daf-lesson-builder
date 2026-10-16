@@ -1,7 +1,7 @@
 import React from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Sparkles, Plus, FileText, ArrowRight, Book, FileUp, FolderOpen, Trash2, Check, Loader2 } from 'lucide-react';
+import { Plus, FileText, Book, FileUp, FolderOpen, Trash2, Check, Loader2 } from 'lucide-react';
 import { useLessonStore } from '../../store/useLessonStore';
 import { BlockItem } from './BlockItem';
 import { CEFRLevel } from '../../types/lesson';
@@ -33,146 +33,160 @@ export const KanbanBuilder: React.FC = () => {
     }
   };
 
-  // --- MÀN HÌNH TỔNG QUAN (Đã phục hồi banner ảnh nền & khối màu) ---
   if (activeTab === 'overview') {
     return (
-      <div className="max-w-5xl mx-auto p-4 sm:p-8 animate-in fade-in duration-300">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào buổi sáng, Giáo viên! <span className="text-amber-500 inline-block animate-bounce origin-bottom">👋</span></h1>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2">Sẵn sàng tạo nên một ngày học thật nhiều cảm hứng?</p>
+      <div className="w-full animate-in fade-in duration-300">
+        <div className="flex flex-col items-center text-center py-16 px-4 max-w-4xl mx-auto">
+          <h1 className="text-[40px] leading-[48px] font-bold text-ink-charcoal mb-4">
+            Mỗi bài giảng là một hành trình.
+          </h1>
+          <p className="text-[18px] leading-[26px] text-slate-veil max-w-2xl mb-8">
+            Khơi nguồn sáng tạo với trợ lý AI chuyên biệt cho việc soạn đề thi và giáo án tiếng Đức chuẩn CEFR. Tiết kiệm 80% thời gian chuẩn bị giáo án.
+          </p>
+          <div className="flex items-center gap-5">
+            <button 
+              onClick={openAIModal} 
+              className="bg-iris-bolt text-paper-white font-semibold text-[15px] px-8 py-3 rounded-full shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              Khám phá trợ lý AI
+            </button>
+            <button 
+              onClick={createEmptyLesson} 
+              className="text-iris-bolt font-semibold text-[15px] hover:underline bg-transparent border-none cursor-pointer"
+            >
+              Soạn từ trang trắng
+            </button>
           </div>
-          <button 
-            onClick={createEmptyLesson}
-            className="hidden sm:flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-md shadow-indigo-500/20 transition-all hover:scale-105"
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto px-4 pb-16">
+          <div 
+            onClick={openSmartBookModal} 
+            className="bg-feature-cyan rounded-[24px] p-2.5 cursor-pointer group hover:scale-[1.02] transition-transform duration-200"
           >
-            <Plus size={18} /> Soạn từ trang trắng
-          </button>
-        </div>
-
-        <div className="w-full mb-10">
-          <div className="relative bg-slate-900 dark:bg-slate-950 rounded-[2rem] p-10 overflow-hidden shadow-xl flex flex-col justify-center min-h-[260px]">
-            <div className="relative z-10 max-w-xl">
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 shadow-sm mb-6">
-                <Sparkles size={24} />
-              </div>
-              <h2 className="text-3xl font-black text-white leading-tight mb-4">Mỗi bài giảng <br/> là một hành trình.</h2>
-              <p className="text-sm text-slate-300 mb-8 leading-relaxed max-w-md">Khơi nguồn sáng tạo với trợ lý AI chuyên biệt cho việc soạn đề thi và giáo án chuẩn CEFR. Tiết kiệm 80% thời gian chuẩn bị.</p>
-              <button onClick={openAIModal} className="flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-900 px-6 py-3 rounded-2xl font-bold text-sm shadow-sm transition-all hover:translate-x-2">
-                Khám phá trợ lý AI <ArrowRight size={16} />
-              </button>
+            <div className="bg-paper-white rounded-lg p-6 h-full flex flex-col items-center text-center shadow-xs">
+              <Book size={36} className="text-ink-charcoal mb-4 group-hover:-translate-y-1 transition-transform" />
+              <h3 className="font-bold text-[20px] text-ink-charcoal mb-1.5">Nạp từ Sách</h3>
+              <p className="text-[14px] text-slate-veil">Kho giáo trình chuẩn CEFR</p>
             </div>
-            <div className="absolute right-0 top-0 bottom-0 w-1/2 md:w-3/5 bg-[url('https://images.unsplash.com/photo-1571260899304-425dea4cf715?q=80&w=800&auto=format&fit=crop')] bg-cover bg-center opacity-60 dark:opacity-40 rounded-l-[4rem] mix-blend-luminosity"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent pointer-events-none"></div>
           </div>
-        </div>
+          
+          <div 
+            onClick={openPdfScannerModal} 
+            className="bg-feature-magenta rounded-[24px] p-2.5 cursor-pointer group hover:scale-[1.02] transition-transform duration-200"
+          >
+            <div className="bg-paper-white rounded-lg p-6 h-full flex flex-col items-center text-center shadow-xs">
+              <FileUp size={36} className="text-ink-charcoal mb-4 group-hover:-translate-y-1 transition-transform" />
+              <h3 className="font-bold text-[20px] text-ink-charcoal mb-1.5">Quét PDF AI</h3>
+              <p className="text-[14px] text-slate-veil">Bóc tách tự động đa trang</p>
+            </div>
+          </div>
 
-        <div className="mb-10">
-          <h3 className="text-base font-bold text-slate-800 dark:text-white mb-4 px-1">Công cụ khởi tạo nhanh</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <button onClick={openSmartBookModal} className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/10 transition-all text-left group flex flex-col justify-between">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Book size={24} /></div>
-              <div><p className="text-sm font-bold text-slate-800 dark:text-slate-200">Nạp từ Sách</p><p className="text-xs text-slate-500 mt-1">Lấy từ kho Admin</p></div>
-            </button>
-            
-            <button onClick={openPdfScannerModal} className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10 transition-all text-left group flex flex-col justify-between">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><FileUp size={24} /></div>
-              <div><p className="text-sm font-bold text-slate-800 dark:text-slate-200">Quét PDF AI</p><p className="text-xs text-slate-500 mt-1">Bóc tách tự động</p></div>
-            </button>
+          <div 
+            onClick={openTemplateModal} 
+            className="bg-feature-violet rounded-[24px] p-2.5 cursor-pointer group hover:scale-[1.02] transition-transform duration-200"
+          >
+            <div className="bg-paper-white rounded-lg p-6 h-full flex flex-col items-center text-center shadow-xs">
+              <FolderOpen size={36} className="text-ink-charcoal mb-4 group-hover:-translate-y-1 transition-transform" />
+              <h3 className="font-bold text-[20px] text-ink-charcoal mb-1.5">Mẫu giáo án</h3>
+              <p className="text-[14px] text-slate-veil">Cấu trúc 45 - 60 phút chuẩn</p>
+            </div>
+          </div>
 
-            <button onClick={openTemplateModal} className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-500 hover:shadow-xl hover:shadow-purple-500/10 transition-all text-left group flex flex-col justify-between">
-              <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><FolderOpen size={24} /></div>
-              <div><p className="text-sm font-bold text-slate-800 dark:text-slate-200">Mẫu giáo án</p><p className="text-xs text-slate-500 mt-1">Cấu trúc chuẩn</p></div>
-            </button>
-
-            <button onClick={openAddActivityModal} className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 hover:shadow-xl hover:shadow-emerald-500/10 transition-all text-left group flex flex-col justify-between">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus size={24} /></div>
-              <div><p className="text-sm font-bold text-slate-800 dark:text-slate-200">Thêm thủ công</p><p className="text-xs text-slate-500 mt-1">Tự tạo hoạt động</p></div>
-            </button>
+          <div 
+            onClick={openAddActivityModal} 
+            className="bg-feature-peach rounded-[24px] p-2.5 cursor-pointer group hover:scale-[1.02] transition-transform duration-200"
+          >
+            <div className="bg-paper-white rounded-lg p-6 h-full flex flex-col items-center text-center shadow-xs">
+              <Plus size={36} className="text-ink-charcoal mb-4 group-hover:-translate-y-1 transition-transform" />
+              <h3 className="font-bold text-[20px] text-ink-charcoal mb-1.5">Thêm thủ công</h3>
+              <p className="text-[14px] text-slate-veil">Tùy biến từng hoạt động</p>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // --- MÀN HÌNH DANH SÁCH GIÁO ÁN CỦA TÔI (Đã phục hồi Table xịn xò) ---
   if (activeTab === 'my_lessons') {
     return (
-      <div className="max-w-5xl mx-auto p-4 sm:p-8 animate-in fade-in duration-300 relative">
+      <div className="max-w-[1200px] mx-auto p-4 sm:p-8 animate-in fade-in duration-300 relative">
         {isLoadingLesson && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/70 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl">
-            <Loader2 size={40} className="animate-spin text-indigo-600 mb-4" />
-            <p className="font-bold text-slate-800 dark:text-white">Đang tải giáo án...</p>
-            <p className="text-xs font-medium text-slate-500 mt-1">Vui lòng chờ trong giây lát</p>
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-paper-white/80 backdrop-blur-xs rounded-lg">
+            <Loader2 size={36} className="animate-spin text-iris-bolt mb-3" />
+            <p className="font-bold text-ink-charcoal">Đang tải giáo án...</p>
+            <p className="text-xs text-slate-veil mt-0.5">Vui lòng chờ trong giây lát</p>
           </div>
         )}
 
-        <div className="flex items-end justify-between mb-8 px-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div className="flex items-end justify-between mb-8 pb-4 border-b border-mist-border">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Giáo án & Đề thi của bạn</h1>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Tổng số: {myLessons.length} bài giảng đã lưu trên Cloud.</p>
+            <h1 className="text-[28px] font-bold text-ink-charcoal tracking-tight">Giáo án & Đề thi của bạn</h1>
+            <p className="text-[15px] text-slate-veil mt-1">Tổng cộng: {myLessons.length} bài giảng đã lưu trữ an toàn trên máy chủ.</p>
           </div>
           <button 
             onClick={createEmptyLesson}
-            className="hidden sm:flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-indigo-500/20 transition-all"
+            className="hidden sm:flex items-center gap-2 bg-iris-bolt hover:opacity-90 text-paper-white px-6 py-2.5 rounded-full font-semibold text-[14px] shadow-sm transition-opacity cursor-pointer"
           >
             <Plus size={18} /> Soạn bài mới
           </button>
         </div>
         
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50/80 dark:bg-slate-800/50 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+        <div className="bg-paper-white border border-mist-border rounded-lg shadow-xs overflow-hidden">
+          <table className="w-full text-left text-[14px]">
+            <thead className="bg-chalk-canvas font-semibold text-ink-charcoal border-b border-mist-border">
               <tr>
                 <th className="p-4 pl-6 w-1/2">Tên Bài Giảng / Đề Thi</th>
-                <th className="p-4 text-center w-1/6">Cấp độ</th>
+                <th className="p-4 text-center w-1/6">Trình độ</th>
                 <th className="p-4 text-center w-1/6">Trạng thái</th>
                 <th className="p-4 text-right pr-6 w-1/6">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+            <tbody className="divide-y divide-mist-border">
               {myLessons.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-16 text-center text-slate-500 text-sm bg-slate-50/30 dark:bg-slate-800/30">
-                    <FolderOpen size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-                    <p className="font-semibold text-slate-600 dark:text-slate-400">Chưa có giáo án nào.</p>
-                    <p className="text-xs mt-1">Hãy bấm "Soạn bài mới" để bắt đầu!</p>
+                  <td colSpan={4} className="p-16 text-center text-slate-veil bg-paper-white">
+                    <FolderOpen size={44} className="mx-auto text-fog-mist mb-3" />
+                    <p className="font-semibold text-ink-charcoal">Chưa có giáo án nào.</p>
+                    <p className="text-xs text-slate-veil mt-1">Nhấp "Soạn bài mới" để bắt đầu tiết dạy đầu tiên của bạn!</p>
                   </td>
                 </tr>
               ) : (
                 myLessons.map((lesson) => (
                   <tr 
                     key={lesson.id} 
-                    className="hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors group cursor-pointer" 
+                    className="hover:bg-chalk-canvas transition-colors group cursor-pointer" 
                     onClick={() => loadLessonById(lesson.id!)}
                   >
                     <td className="p-4 pl-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 ring-1 ring-indigo-500/20 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-9 h-9 rounded bg-lilac-wash text-iris-bolt flex items-center justify-center shrink-0">
                           <FileText size={18} />
                         </div>
                         <div className="min-w-0">
-                          <p className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors truncate text-[15px]">{lesson.title || 'Bài giảng không tên'}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{lesson.topic || 'Chưa phân loại chủ đề'}</p>
+                          <p className="font-semibold text-ink-charcoal group-hover:text-iris-bolt transition-colors truncate text-[15px]">
+                            {lesson.title || 'Bài giảng không tên'}
+                          </p>
+                          <p className="text-xs text-slate-veil mt-0.5 truncate">{lesson.topic || 'Chưa gắn chủ đề'}</p>
                         </div>
                       </div>
                     </td>
                     <td className="p-4 text-center">
-                      <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                      <span className="font-semibold text-xs text-slate-veil bg-chalk-canvas border border-mist-border px-2.5 py-1 rounded">
                         {lesson.level || 'A1'}
                       </span>
                     </td>
                     <td className="p-4 text-center">
-                      <span className="inline-flex px-3 py-1 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                      <span className="inline-flex px-2.5 py-1 rounded text-[11px] font-semibold bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0]">
                         Đã lưu Cloud
                       </span>
                     </td>
                     <td className="p-4 text-right pr-6">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={(e) => handleDeleteLesson(e, lesson.id!)} 
-                          className="p-2 text-slate-400 hover:text-rose-600 bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors border border-slate-200 dark:border-slate-700 hover:border-rose-200"
-                          title="Xóa vĩnh viễn giáo án này"
+                          className="p-1.5 text-slate-veil hover:text-[#dc2626] rounded transition-colors cursor-pointer"
+                          title="Xóa giáo án"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -188,47 +202,46 @@ export const KanbanBuilder: React.FC = () => {
     );
   }
 
-  // --- MÀN HÌNH EDITOR (SOẠN THẢO) CHI TIẾT ---
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-200">
-      <div className="flex flex-wrap items-center justify-between p-4 px-6 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 rounded-2xl shadow-sm gap-3">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-200">
+      <div className="flex flex-wrap items-center justify-between p-4 px-6 bg-lilac-wash border border-mist-border rounded-lg shadow-xs gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse shrink-0"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-iris-bolt shrink-0"></div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-indigo-950 dark:text-indigo-200 truncate">
-              Chế độ chỉnh sửa chi tiết (Soạn thảo)
+            <p className="text-sm font-bold text-ink-charcoal truncate">
+              Chế độ chỉnh sửa giáo án chi tiết
             </p>
-            <p className="text-xs font-medium text-indigo-700/80 dark:text-indigo-400/80 truncate mt-0.5">
-              Sau khi chỉnh sửa xong, bấm hoàn tất để trở về xem đề thi. Kéo thả các thẻ để sắp xếp.
+            <p className="text-xs text-slate-veil truncate mt-0.5">
+              Kéo thả các thẻ để sắp xếp mạch tiết dạy. Sau khi sửa xong, nhấp hoàn tất để xem bản in/học sinh.
             </p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setViewMode('student')}
-          className="flex items-center gap-2 text-xs font-bold px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md shadow-indigo-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+          className="flex items-center gap-1.5 text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full shadow-xs transition-opacity cursor-pointer shrink-0"
         >
-          <Check size={16} /> Hoàn tất & Thoát sửa
+          <Check size={15} /> Hoàn tất & Xem tài liệu
         </button>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
+      <div className="bg-paper-white border border-mist-border rounded-lg p-6 shadow-xs space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div>
-            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Thema (Chủ đề)</label>
+            <label className="block text-xs font-semibold text-slate-veil uppercase tracking-wider mb-2">Chủ đề (Thema)</label>
             <input 
               type="text" 
               value={lessonInfo.topic} 
               onChange={(e) => updateLessonInfo({ topic: e.target.value })} 
-              className="w-full text-sm font-bold p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all" 
+              className="w-full text-sm font-semibold p-2.5 rounded bg-chalk-canvas border border-mist-border focus:outline-none focus:border-iris-bolt text-ink-charcoal transition-colors" 
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Niveau (Trình độ)</label>
+            <label className="block text-xs font-semibold text-slate-veil uppercase tracking-wider mb-2">Trình độ (Niveau)</label>
             <select 
               value={lessonInfo.level} 
               onChange={(e) => updateLessonInfo({ level: e.target.value as CEFRLevel })} 
-              className="w-full text-sm font-bold p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all"
+              className="w-full text-sm font-semibold p-2.5 rounded bg-chalk-canvas border border-mist-border focus:outline-none focus:border-iris-bolt text-ink-charcoal transition-colors cursor-pointer"
             >
               {['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'TDN3', 'TDN4', 'TDN5'].map((lvl) => (
                 <option key={lvl} value={lvl}>{lvl}</option>
@@ -236,7 +249,7 @@ export const KanbanBuilder: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Gesamtdauer (Phút)</label>
+            <label className="block text-xs font-semibold text-slate-veil uppercase tracking-wider mb-2">Thời lượng (Phút)</label>
             <input 
               type="number" 
               value={lessonInfo.targetDuration === 0 ? '' : lessonInfo.targetDuration} 
@@ -245,31 +258,31 @@ export const KanbanBuilder: React.FC = () => {
                 updateLessonInfo({ targetDuration: val === '' ? 0 : Number(val) });
               }} 
               placeholder="0"
-              className="w-full text-sm font-bold p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all" 
+              className="w-full text-sm font-semibold p-2.5 rounded bg-chalk-canvas border border-mist-border focus:outline-none focus:border-iris-bolt text-ink-charcoal transition-colors" 
             />
           </div>
         </div>
         <div>
-          <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Lernziel (Mục tiêu bài học)</label>
+          <label className="block text-xs font-semibold text-slate-veil uppercase tracking-wider mb-2">Mục tiêu bài học (Lernziel)</label>
           <input 
             type="text" 
             value={lessonInfo.objectives} 
             onChange={(e) => updateLessonInfo({ objectives: e.target.value })} 
-            className="w-full text-sm font-medium p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all" 
+            className="w-full text-sm font-medium p-2.5 rounded bg-chalk-canvas border border-mist-border focus:outline-none focus:border-iris-bolt text-ink-charcoal transition-colors" 
           />
         </div>
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-          <div className="min-h-[300px]">
+          <div className="min-h-[250px]">
             {blocks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-16 mt-8 bg-slate-50/50 dark:bg-slate-800/20 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-[2rem] text-center">
-                <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-3xl shadow-sm flex items-center justify-center text-slate-400 dark:text-slate-500 mb-5">
-                  <Plus size={40} />
+              <div className="flex flex-col items-center justify-center p-14 bg-paper-white border border-dashed border-mist-border rounded-lg text-center shadow-xs">
+                <div className="w-14 h-14 bg-chalk-canvas rounded-full flex items-center justify-center text-slate-veil mb-3">
+                  <Plus size={28} />
                 </div>
-                <h3 className="text-lg font-extrabold text-slate-800 dark:text-white mb-2">Chưa có hoạt động nào</h3>
-                <p className="text-sm text-slate-500 font-medium max-w-sm">Bắt đầu bằng cách thêm các block thủ công hoặc sử dụng tính năng nạp thông minh ở dưới.</p>
+                <h3 className="text-base font-bold text-ink-charcoal mb-1">Chưa có hoạt động nào</h3>
+                <p className="text-xs text-slate-veil max-w-sm">Bắt đầu bằng cách thêm thẻ hoạt động thủ công hoặc dùng thanh công cụ nạp thông minh phía dưới.</p>
               </div>
             ) : (
               blocks.map((block, index) => (
@@ -280,19 +293,31 @@ export const KanbanBuilder: React.FC = () => {
         </SortableContext>
       </DndContext>
 
-      <div className="pt-6 pb-12 flex flex-wrap items-center justify-center gap-4 mt-8">
-        <button onClick={openSmartBookModal} className="flex items-center gap-2 text-sm font-bold px-6 py-3 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-700 dark:text-blue-400 hover:bg-blue-100 transition-colors shadow-sm hover:-translate-y-0.5">
-          <Book size={18} /> Nạp từ Sách
+      <div className="pt-4 pb-14 flex flex-wrap items-center justify-center gap-3">
+        <button 
+          onClick={openSmartBookModal} 
+          className="text-iris-bolt font-semibold text-xs px-5 py-2.5 rounded-full bg-paper-white border border-iris-bolt hover:bg-lilac-wash transition-colors shadow-xs cursor-pointer"
+        >
+          Nạp từ Sách
         </button>
-        <button onClick={openPdfScannerModal} className="flex items-center gap-2 text-sm font-bold px-6 py-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 transition-colors shadow-sm hover:-translate-y-0.5">
-          <FileUp size={18} /> Quét PDF AI
+        <button 
+          onClick={openPdfScannerModal} 
+          className="text-iris-bolt font-semibold text-xs px-5 py-2.5 rounded-full bg-paper-white border border-iris-bolt hover:bg-lilac-wash transition-colors shadow-xs cursor-pointer"
+        >
+          Quét PDF AI
         </button>
-        <button onClick={openTemplateModal} className="flex items-center gap-2 text-sm font-bold px-6 py-3 rounded-2xl bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 text-purple-700 dark:text-purple-400 hover:bg-purple-100 transition-colors shadow-sm hover:-translate-y-0.5">
-          <FolderOpen size={18} /> Mẫu giáo án
+        <button 
+          onClick={openTemplateModal} 
+          className="text-iris-bolt font-semibold text-xs px-5 py-2.5 rounded-full bg-paper-white border border-iris-bolt hover:bg-lilac-wash transition-colors shadow-xs cursor-pointer"
+        >
+          Mẫu giáo án
         </button>
-        <div className="w-[1px] h-8 bg-slate-200 mx-2" />
-        <button onClick={openAddActivityModal} className="flex items-center gap-2 text-sm font-bold px-8 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 shadow-md transition-all hover:scale-105">
-          <Plus size={18} /> Thêm hoạt động
+        <div className="w-[1px] h-6 bg-mist-border mx-2" />
+        <button 
+          onClick={openAddActivityModal} 
+          className="bg-iris-bolt text-paper-white font-semibold text-xs px-7 py-2.5 rounded-full hover:opacity-90 shadow-sm transition-opacity cursor-pointer"
+        >
+          + Thêm hoạt động
         </button>
       </div>
     </div>

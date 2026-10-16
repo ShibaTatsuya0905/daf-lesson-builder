@@ -17,11 +17,11 @@ const BookOpeningLoader: React.FC<{ text?: string }> = ({ text = 'Đang lật m�
           }
           50% {
             transform: rotateY(-90deg);
-            background-color: #f1f5f9;
+            background-color: #f6f7fb;
           }
           100% {
             transform: rotateY(-180deg);
-            background-color: #e2e8f0;
+            background-color: #d9dde8;
           }
         }
         .perspective-book {
@@ -34,22 +34,22 @@ const BookOpeningLoader: React.FC<{ text?: string }> = ({ text = 'Đang lật m�
       `}</style>
 
       <div className="relative w-16 h-12 perspective-book flex items-center justify-center">
-        <div className="absolute inset-0 flex shadow-lg rounded-sm overflow-hidden">
-          <div className="w-1/2 h-full bg-blue-600 border-r border-blue-700"></div>
-          <div className="w-1/2 h-full bg-blue-600 border-l border-blue-700"></div>
+        <div className="absolute inset-0 flex shadow-sm rounded-sm overflow-hidden">
+          <div className="w-1/2 h-full bg-iris-bolt border-r border-iris-bolt/80"></div>
+          <div className="w-1/2 h-full bg-iris-bolt border-l border-iris-bolt/80"></div>
         </div>
 
-        <div className="absolute top-[2px] left-[3px] w-[29px] h-[44px] bg-slate-100 rounded-l-xs border-r border-slate-300"></div>
-        <div className="absolute top-[2px] right-[3px] w-[29px] h-[44px] bg-slate-100 rounded-r-xs border-l border-slate-300"></div>
+        <div className="absolute top-[2px] left-[3px] w-[29px] h-[44px] bg-chalk-canvas rounded-l-xs border-r border-mist-border"></div>
+        <div className="absolute top-[2px] right-[3px] w-[29px] h-[44px] bg-chalk-canvas rounded-r-xs border-l border-mist-border"></div>
 
-        <div className="absolute top-[2px] right-[3px] w-[29px] h-[44px] bg-white rounded-r-xs shadow-xs flipping-page"></div>
+        <div className="absolute top-[2px] right-[3px] w-[29px] h-[44px] bg-paper-white rounded-r-xs shadow-xs flipping-page"></div>
 
-        <div className="absolute w-[2px] h-[48px] bg-blue-900 rounded-full z-10"></div>
+        <div className="absolute w-[2px] h-[48px] bg-deep-indigo rounded-full z-10"></div>
       </div>
 
       <div className="text-center">
-        <p className="text-xs font-extrabold text-blue-700 tracking-wide animate-pulse">{text}</p>
-        <p className="text-[10px] text-slate-400 mt-0.5">Vui lòng chờ trong giây lát</p>
+        <p className="text-xs font-bold text-iris-bolt tracking-wide animate-pulse">{text}</p>
+        <p className="text-[11px] text-slate-veil mt-0.5">Vui lòng chờ trong giây lát</p>
       </div>
     </div>
   );
@@ -118,57 +118,57 @@ export const SmartBookModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 transition-all duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4 transition-all duration-200"
       onClick={closeSmartBookModal}
     >
       <div
-        className="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl overflow-hidden select-none animate-in fade-in zoom-in-95 duration-200 ease-out"
+        className="bg-paper-white border border-mist-border rounded-[24px] w-full max-w-4xl h-[85vh] flex flex-col shadow-md overflow-hidden select-none animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 px-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-white">
+        <div className="p-5 px-6 border-b border-mist-border flex items-center justify-between bg-chalk-canvas">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 rounded-full bg-lilac-wash text-iris-bolt flex items-center justify-center shadow-xs">
               <Book size={20} />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-blue-950 flex items-center gap-2">
+              <h3 className="text-base font-bold text-ink-charcoal flex items-center gap-2">
                 Nạp dữ liệu từ Giáo trình chính quy
-                <Sparkles size={14} className="text-amber-500" />
+                <Sparkles size={14} className="text-iris-bolt" />
               </h3>
-              <p className="text-xs text-blue-700/70">
-                Chọn bộ giáo trình từ A1 - C2 và bài học tương ứng để tự động nạp từ vựng và ngữ pháp
+              <p className="text-xs text-slate-veil">
+                Chọn bộ giáo trình từ A1 - C2 và bài học để tự động nạp từ vựng và cấu trúc ngữ pháp
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <button
               onClick={fetchBooks}
-              className="p-2 rounded-xl text-blue-600 hover:bg-blue-100/70 transition-all hover:rotate-180 duration-500"
-              title="Tải lại danh sách sách"
+              className="p-1.5 rounded-full text-slate-veil hover:text-ink-charcoal hover:bg-mist-border transition-colors cursor-pointer"
+              title="Tải lại danh mục"
             >
               <RotateCw size={16} />
             </button>
             <button
               type="button"
               onClick={closeSmartBookModal}
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="p-1.5 rounded-full text-slate-veil hover:text-ink-charcoal hover:bg-mist-border transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
           </div>
         </div>
 
-        <div className="p-3 px-6 border-b border-slate-100 bg-white flex flex-wrap items-center justify-between gap-3 shadow-xs z-10">
+        <div className="p-3 px-6 border-b border-mist-border bg-paper-white flex flex-wrap items-center justify-between gap-3 shadow-xs z-10">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-bold text-slate-400 uppercase mr-1">Trình độ:</span>
+            <span className="text-xs font-semibold text-slate-veil uppercase mr-1">Trình độ:</span>
             {LEVELS.map((lvl) => (
               <button
                 key={lvl}
                 onClick={() => setSelectedLevel(lvl)}
-                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 ${
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   selectedLevel === lvl
-                    ? 'bg-blue-600 text-white shadow-xs scale-105'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-iris-bolt text-paper-white shadow-xs'
+                    : 'bg-chalk-canvas text-slate-veil hover:text-ink-charcoal border border-mist-border'
                 }`}
               >
                 {lvl}
@@ -176,22 +176,22 @@ export const SmartBookModal: React.FC = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-50 px-3.5 py-1.5 rounded-xl border border-slate-200 focus-within:bg-white focus-within:border-blue-500 transition-all duration-200 w-full sm:w-64">
-            <Search size={14} className="text-slate-400 shrink-0" />
+          <div className="flex items-center gap-2 bg-chalk-canvas px-3 py-1.5 rounded border border-mist-border focus-within:border-iris-bolt transition-colors w-full sm:w-64">
+            <Search size={14} className="text-slate-veil shrink-0" />
             <input
               type="text"
               placeholder="Tìm theo tên sách hoặc NXB..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full text-xs bg-transparent focus:outline-none text-slate-800"
+              className="w-full text-xs bg-transparent focus:outline-none text-ink-charcoal font-semibold"
             />
           </div>
         </div>
 
         <div className="flex-1 flex overflow-hidden">
-          <div className="w-1/2 border-r border-slate-100 p-4 overflow-y-auto bg-slate-50/40">
+          <div className="w-1/2 border-r border-mist-border p-4 overflow-y-auto bg-chalk-canvas">
             <div className="flex justify-between items-center mb-3 px-1">
-              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              <h4 className="text-xs font-semibold text-slate-veil uppercase tracking-wider">
                 1. Danh sách Sách ({filteredBooks.length})
               </h4>
             </div>
@@ -200,8 +200,8 @@ export const SmartBookModal: React.FC = () => {
               <BookOpeningLoader text="Đang tải danh mục giáo trình..." />
             ) : filteredBooks.length === 0 ? (
               <div className="text-center py-12 space-y-2">
-                <Book size={36} className="mx-auto text-slate-300" />
-                <p className="text-xs text-slate-400 font-medium">Không tìm thấy cuốn sách nào phù hợp.</p>
+                <Book size={32} className="mx-auto text-fog-mist" />
+                <p className="text-xs text-slate-veil font-medium">Không tìm thấy cuốn sách nào phù hợp.</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -211,29 +211,29 @@ export const SmartBookModal: React.FC = () => {
                     <button
                       key={book.id}
                       onClick={() => handleSelectBook(book)}
-                      className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all duration-200 ${
+                      className={`w-full flex items-center justify-between p-3.5 rounded-lg border text-left transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-blue-50/80 border-blue-300 shadow-sm translate-x-1'
-                          : 'bg-white border-slate-200 hover:border-blue-200 hover:bg-slate-50/80'
+                          ? 'bg-paper-white border-iris-bolt shadow-sm translate-x-1'
+                          : 'bg-paper-white border-mist-border hover:border-slate-veil'
                       }`}
                     >
                       <div className="min-w-0 pr-2">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md border ${
-                            isSelected ? 'bg-blue-600 text-white border-blue-600' : 'bg-blue-50 text-blue-700 border-blue-200'
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                            isSelected ? 'bg-lilac-wash text-iris-bolt border-iris-bolt' : 'bg-chalk-canvas text-slate-veil border-mist-border'
                           }`}>
                             {book.level}
                           </span>
-                          <h5 className={`text-sm font-bold truncate transition-colors ${
-                            isSelected ? 'text-blue-900' : 'text-slate-800'
+                          <h5 className={`text-sm font-bold truncate ${
+                            isSelected ? 'text-iris-bolt' : 'text-ink-charcoal'
                           }`}>
                             {book.title}
                           </h5>
                         </div>
-                        <p className="text-[11px] text-slate-500 truncate">{book.publisher || 'Nhà xuất bản chuẩn'}</p>
+                        <p className="text-[11px] text-slate-veil truncate">{book.publisher || 'Nhà xuất bản chuẩn'}</p>
                       </div>
-                      <ChevronRight size={16} className={`shrink-0 transition-transform duration-200 ${
-                        isSelected ? 'text-blue-600 translate-x-1' : 'text-slate-300'
+                      <ChevronRight size={16} className={`shrink-0 transition-transform ${
+                        isSelected ? 'text-iris-bolt translate-x-1' : 'text-fog-mist'
                       }`} />
                     </button>
                   );
@@ -242,15 +242,15 @@ export const SmartBookModal: React.FC = () => {
             )}
           </div>
 
-          <div className="w-1/2 p-4 overflow-y-auto bg-white">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 px-1">
+          <div className="w-1/2 p-4 overflow-y-auto bg-paper-white">
+            <h4 className="text-xs font-semibold text-slate-veil uppercase tracking-wider mb-3 px-1">
               2. Chọn bài học (Lektion)
             </h4>
 
             {!selectedBook ? (
-              <div className="h-full flex flex-col items-center justify-center text-slate-400 py-12 space-y-2">
-                <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
-                  <Book size={28} className="text-slate-300" />
+              <div className="h-full flex flex-col items-center justify-center text-slate-veil py-12 space-y-2">
+                <div className="w-14 h-14 rounded-full bg-chalk-canvas border border-mist-border flex items-center justify-center">
+                  <Book size={24} className="text-slate-veil" />
                 </div>
                 <p className="text-xs font-medium">Vui lòng chọn một cuốn sách ở cột bên trái</p>
               </div>
@@ -258,32 +258,32 @@ export const SmartBookModal: React.FC = () => {
               <BookOpeningLoader text={`Đang mở các Lektion của ${selectedBook.title}...`} />
             ) : lektions.length === 0 ? (
               <div className="text-center py-12 space-y-2">
-                <FileText size={36} className="mx-auto text-slate-300" />
-                <p className="text-xs text-slate-400 font-medium">Cuốn sách này chưa có dữ liệu Lektion.</p>
+                <FileText size={32} className="mx-auto text-fog-mist" />
+                <p className="text-xs text-slate-veil font-medium">Cuốn sách này chưa có dữ liệu Lektion.</p>
               </div>
             ) : (
-              <div className="space-y-2 animate-in fade-in slide-in-from-right-3 duration-300 ease-out">
+              <div className="space-y-2 animate-in fade-in duration-200">
                 {lektions.map((lektion) => (
                   <button
                     key={lektion.id}
                     onClick={() => importFromBook(lektion.id)}
-                    className="w-full flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-200 hover:border-purple-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-left group"
+                    className="w-full flex items-start gap-3 p-3.5 rounded-lg bg-paper-white border border-mist-border hover:border-iris-bolt hover:shadow-xs transition-all text-left group cursor-pointer"
                   >
-                    <div className="p-2 rounded-xl bg-slate-50 text-slate-400 group-hover:bg-purple-50 group-hover:text-purple-600 transition-colors shrink-0">
-                      <FileText size={18} />
+                    <div className="p-2 rounded bg-chalk-canvas text-slate-veil group-hover:bg-lilac-wash group-hover:text-iris-bolt transition-colors shrink-0">
+                      <FileText size={16} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <span className="text-[10px] font-extrabold text-purple-700 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-iris-bolt uppercase tracking-wider">
                         Lektion {lektion.lektionNumber}
                       </span>
-                      <h5 className="text-xs font-bold text-slate-800 group-hover:text-purple-700 leading-tight mt-0.5 truncate transition-colors">
+                      <h5 className="text-xs font-bold text-ink-charcoal group-hover:text-iris-bolt leading-tight mt-0.5 truncate transition-colors">
                         {lektion.title}
                       </h5>
                       {lektion.theme && (
-                        <p className="text-[11px] text-slate-500 mt-1 truncate">{lektion.theme}</p>
+                        <p className="text-[11px] text-slate-veil mt-1 truncate">{lektion.theme}</p>
                       )}
                     </div>
-                    <ChevronRight size={16} className="text-slate-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all self-center shrink-0" />
+                    <ChevronRight size={16} className="text-fog-mist group-hover:text-iris-bolt group-hover:translate-x-1 transition-all self-center shrink-0" />
                   </button>
                 ))}
               </div>

@@ -10,8 +10,6 @@ import {
   ArrowLeft, 
   Loader2, 
   Search, 
-  ListOrdered, 
-  ArrowRight, 
   Edit2, 
   X, 
   ListFilter,
@@ -19,8 +17,7 @@ import {
   Clock,
   MapPin,
   GraduationCap,
-  FileSpreadsheet,
-  CheckCircle2
+  FileSpreadsheet
 } from 'lucide-react';
 import { useLessonStore } from '../../store/useLessonStore';
 import { apiRequest } from '../../services/apiClient';
@@ -72,7 +69,6 @@ export const AdminDashboard: React.FC = () => {
   const [classes, setClasses] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [filterLevel, setFilterLevel] = useState('Alle');
 
   const [isNewBookModalOpen, setIsNewBookModalOpen] = useState(false);
@@ -141,13 +137,10 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const fetchBooks = async () => {
-    setIsLoading(true);
     try {
       const res = await apiRequest('/admin/books');
       if (res.ok) setBooks(await res.json());
-    } finally {
-      setIsLoading(false);
-    }
+    } catch (e) {}
   };
 
   const fetchClasses = async () => {
@@ -188,14 +181,6 @@ export const AdminDashboard: React.FC = () => {
         method: 'PATCH',
         body: JSON.stringify({ role: nextRole }),
       });
-      if (res.ok) fetchUsers();
-    } catch (e) {}
-  };
-
-  const handleDeleteUser = async (userId: string) => {
-    if (!window.confirm('Vô hiệu hóa tài khoản giáo viên này?')) return;
-    try {
-      const res = await apiRequest(`/admin/users/${userId}`, { method: 'DELETE' });
       if (res.ok) fetchUsers();
     } catch (e) {}
   };
@@ -576,73 +561,48 @@ export const AdminDashboard: React.FC = () => {
     return b.level.toUpperCase() === filterLevel.toUpperCase();
   });
 
+  const tabClass = (isActive: boolean) => `
+    flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer
+    ${isActive ? 'bg-iris-bolt text-paper-white shadow-xs' : 'text-slate-veil hover:bg-chalk-canvas hover:text-ink-charcoal'}
+  `;
+
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-6 sm:p-10 select-none animate-in fade-in duration-200">
+    <div className="min-h-full bg-chalk-canvas text-ink-charcoal p-6 sm:p-10 select-none animate-in fade-in duration-200">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-mist-border">
           <div className="flex items-center gap-3">
             <button
               onClick={() => toggleAdminView(false)}
-              className="flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-xs transition-colors"
+              className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full bg-paper-white border border-mist-border text-slate-veil hover:text-ink-charcoal shadow-xs transition-colors cursor-pointer"
             >
-              <ArrowLeft size={16} /> Quay lại Giáo án
+              <ArrowLeft size={15} /> Quay lại Giáo án
             </button>
-            <div className="h-6 w-[1px] bg-slate-200 dark:border-slate-800" />
+            <div className="h-6 w-[1px] bg-mist-border" />
             <div>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <ShieldCheck className="text-purple-600 dark:text-purple-400" size={24} />
+              <h1 className="text-xl sm:text-2xl font-bold text-ink-charcoal flex items-center gap-2">
+                <ShieldCheck className="text-iris-bolt" size={24} />
                 Trung tâm Quản trị (Admin Portal)
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Quản trị toàn diện kho sách, giáo viên, lớp học, học sinh và thời khóa biểu</p>
+              <p className="text-xs text-slate-veil">Quản trị toàn diện kho giáo trình, tài khoản giáo viên, lớp học và lịch giảng dạy</p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center bg-slate-200 dark:bg-slate-800 p-1 rounded-2xl gap-1">
-            <button
-              onClick={() => setActiveTab('books')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'books' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <BookOpen size={15} className="text-purple-600 dark:text-purple-400" />
-              <span>Sách & Lektion</span>
+          <div className="flex flex-wrap items-center bg-paper-white border border-mist-border p-1 rounded-full gap-1 shadow-xs">
+            <button onClick={() => setActiveTab('books')} className={tabClass(activeTab === 'books')}>
+              <BookOpen size={14} /> Sách & Lektion
             </button>
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'users' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Users size={15} className="text-blue-600 dark:text-blue-400" />
-              <span>Giáo viên ({users.length})</span>
+            <button onClick={() => setActiveTab('users')} className={tabClass(activeTab === 'users')}>
+              <Users size={14} /> Giáo viên ({users.length})
             </button>
-            <button
-              onClick={() => setActiveTab('classes')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'classes' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <GraduationCap size={15} className="text-emerald-600 dark:text-emerald-400" />
-              <span>Lớp học ({classes.length})</span>
+            <button onClick={() => setActiveTab('classes')} className={tabClass(activeTab === 'classes')}>
+              <GraduationCap size={14} /> Lớp học ({classes.length})
             </button>
-            <button
-              onClick={() => setActiveTab('students')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'students' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Users size={15} className="text-teal-600 dark:text-teal-400" />
-              <span>Học sinh ({students.length})</span>
+            <button onClick={() => setActiveTab('students')} className={tabClass(activeTab === 'students')}>
+              <Users size={14} /> Học sinh ({students.length})
             </button>
-            <button
-              onClick={() => setActiveTab('schedules')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'schedules' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Calendar size={15} className="text-amber-600 dark:text-amber-400" />
-              <span>Xếp Lịch Dạy ({schedules.length})</span>
+            <button onClick={() => setActiveTab('schedules')} className={tabClass(activeTab === 'schedules')}>
+              <Calendar size={14} /> Lịch Dạy ({schedules.length})
             </button>
           </div>
         </div>
@@ -651,25 +611,25 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="flex flex-wrap justify-between items-center gap-4">
               <div>
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">Danh mục Giáo trình chính quy (A1 - C2)</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Quản lý sách, chỉnh sửa Lektion, từ vựng và quét AI mục lục sách PDF</p>
+                <h2 className="text-base font-bold text-ink-charcoal">Danh mục Giáo trình chính quy (A1 - C2)</h2>
+                <p className="text-xs text-slate-veil">Quản lý sách, chỉnh sửa bài học, danh sách từ vựng và trích xuất tự động qua AI</p>
               </div>
               <button
                 onClick={() => setIsNewBookModalOpen(true)}
-                className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-sm transition-all"
+                className="flex items-center gap-2 text-xs font-semibold px-5 py-2.5 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs transition-opacity cursor-pointer"
               >
-                <Plus size={16} /> Thêm Cuốn Sách Mới
+                <Plus size={15} /> Thêm Cuốn Sách Mới
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5 p-1.5 bg-slate-200/80 dark:bg-slate-800/90 rounded-2xl w-fit border border-slate-300 dark:border-slate-700 shadow-xs">
-              <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase px-2.5">Phân loại:</span>
+            <div className="flex items-center gap-1.5 p-1 bg-paper-white rounded-full w-fit border border-mist-border shadow-xs">
+              <span className="text-xs font-bold text-slate-veil uppercase px-3">Phân loại:</span>
               {FILTER_LEVELS.map((lvl) => (
                 <button
                   key={lvl}
                   onClick={() => setFilterLevel(lvl)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    filterLevel === lvl ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-white/50'
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                    filterLevel === lvl ? 'bg-iris-bolt text-paper-white shadow-xs' : 'text-slate-veil hover:text-ink-charcoal'
                   }`}
                 >
                   {lvl}
@@ -679,45 +639,45 @@ export const AdminDashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredBooks.map((book) => (
-                <div key={book.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div key={book.id} className="bg-paper-white border border-mist-border rounded-lg p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-wash text-iris-bolt border border-mist-border">
                         Niveau {book.level}
                       </span>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => setEditingBook({ ...book })} className="text-slate-400 hover:text-blue-600 p-1">
-                          <Edit2 size={14} />
+                        <button onClick={() => setEditingBook({ ...book })} className="text-slate-veil hover:text-iris-bolt p-1 cursor-pointer">
+                          <Edit2 size={13} />
                         </button>
-                        <button onClick={() => handleDeleteBook(book.id)} className="text-slate-300 hover:text-red-600 p-1">
-                          <Trash2 size={14} />
+                        <button onClick={() => handleDeleteBook(book.id)} className="text-slate-veil hover:text-[#dc2626] p-1 cursor-pointer">
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </div>
 
-                    <h3 className="font-extrabold text-base text-slate-900 dark:text-white leading-snug">{book.title}</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">NXB: {book.publisher || 'Không xác định'}</p>
+                    <h3 className="font-bold text-base text-ink-charcoal leading-snug">{book.title}</h3>
+                    <p className="text-xs text-slate-veil mt-0.5">NXB: {book.publisher || 'Không xác định'}</p>
 
-                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex justify-between items-center">
+                    <div className="mt-4 pt-3 border-t border-mist-border">
+                      <span className="text-xs font-semibold text-slate-veil flex justify-between items-center">
                         <span>Các Lektion trong sách:</span>
-                        <span className="text-purple-600 dark:text-purple-400 font-mono font-bold">{book.lektions?.length || 0} bài</span>
+                        <span className="text-iris-bolt font-semibold">{book.lektions?.length || 0} bài</span>
                       </span>
 
                       <div className="mt-2 space-y-1.5 max-h-36 overflow-y-auto pr-1">
                         {book.lektions?.length === 0 ? (
-                          <p className="text-[11px] text-slate-400 italic">Chưa có bài học nào được nạp</p>
+                          <p className="text-[11px] text-fog-mist italic">Chưa có bài học nào được nạp</p>
                         ) : (
                           book.lektions.map((l) => (
-                            <div key={l.id} className="text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between group hover:bg-purple-50/40 transition-colors">
+                            <div key={l.id} className="text-xs p-2 rounded bg-chalk-canvas border border-mist-border flex items-center justify-between group hover:bg-lilac-wash/50 transition-colors">
                               <div onClick={() => handleOpenInspectLektion(l)} className="truncate mr-2 cursor-pointer hover:underline" title="Xem & sửa từ vựng bài này">
-                                <span className="font-bold text-purple-700 dark:text-purple-400 mr-1.5">Lektion {l.lektionNumber}:</span>
-                                <span className="font-medium text-slate-800 dark:text-slate-200">{l.title}</span>
+                                <span className="font-bold text-iris-bolt mr-1.5">Lektion {l.lektionNumber}:</span>
+                                <span className="font-medium text-ink-charcoal">{l.title}</span>
                               </div>
                               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => handleOpenInspectLektion(l)} className="p-1 text-slate-400 hover:text-purple-600" title="Soát từ vựng"><ListFilter size={12} /></button>
-                                <button onClick={() => setEditingLektion({ ...l })} className="p-1 text-slate-400 hover:text-blue-600" title="Sửa Lektion"><Edit2 size={12} /></button>
-                                <button onClick={() => handleDeleteLektion(l.id)} className="p-1 text-slate-400 hover:text-red-500" title="Xóa Lektion"><Trash2 size={12} /></button>
+                                <button onClick={() => handleOpenInspectLektion(l)} className="p-1 text-slate-veil hover:text-iris-bolt cursor-pointer" title="Soát từ vựng"><ListFilter size={12} /></button>
+                                <button onClick={() => setEditingLektion({ ...l })} className="p-1 text-slate-veil hover:text-iris-bolt cursor-pointer" title="Sửa Lektion"><Edit2 size={12} /></button>
+                                <button onClick={() => handleDeleteLektion(l.id)} className="p-1 text-slate-veil hover:text-[#dc2626] cursor-pointer" title="Xóa Lektion"><Trash2 size={12} /></button>
                               </div>
                             </div>
                           ))
@@ -726,16 +686,16 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="mt-5 pt-3 border-t border-mist-border">
                     <button
                       onClick={() => {
                         setSelectedBookForScan(book);
                         setDetectedToc([]);
                         setFullPdfFile(null);
                       }}
-                      className="w-full flex items-center justify-center gap-1.5 text-xs font-bold py-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition-colors"
+                      className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-full bg-paper-white hover:bg-lilac-wash text-iris-bolt border border-iris-bolt transition-colors cursor-pointer"
                     >
-                      <Sparkles size={14} /> AI Quét Mục Lục PDF & Nạp Tự Động
+                      <Sparkles size={13} /> Quét Mục Lục PDF bằng AI
                     </button>
                   </div>
                 </div>
@@ -745,13 +705,13 @@ export const AdminDashboard: React.FC = () => {
         )}
 
         {activeTab === 'users' && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
-            <div className="p-4 px-6 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="font-extrabold text-sm text-slate-800 dark:text-white">Danh sách Giáo viên trong hệ thống</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Quản lý và cấp quyền Quản trị viên (ADMIN) cho giáo viên</p>
+          <div className="bg-paper-white border border-mist-border rounded-lg overflow-hidden shadow-xs">
+            <div className="p-4 px-6 border-b border-mist-border">
+              <h3 className="font-bold text-sm text-ink-charcoal">Danh sách Giáo viên trong hệ thống</h3>
+              <p className="text-xs text-slate-veil">Quản lý và cấp quyền Quản trị viên (ADMIN) cho giáo viên</p>
             </div>
             <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-100 dark:border-slate-800">
+              <thead className="bg-chalk-canvas text-slate-veil font-semibold border-b border-mist-border">
                 <tr>
                   <th className="p-3.5 pl-6">Giáo viên</th>
                   <th className="p-3.5">Email</th>
@@ -759,18 +719,18 @@ export const AdminDashboard: React.FC = () => {
                   <th className="p-3.5 text-right pr-6">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-mist-border">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-                    <td className="p-3.5 pl-6 font-bold text-slate-900 dark:text-white">{u.name}</td>
-                    <td className="p-3.5 text-slate-600 dark:text-slate-400 font-mono">{u.email}</td>
+                  <tr key={u.id} className="hover:bg-chalk-canvas transition-colors">
+                    <td className="p-3.5 pl-6 font-semibold text-ink-charcoal">{u.name}</td>
+                    <td className="p-3.5 text-slate-veil font-mono">{u.email}</td>
                     <td className="p-3.5">
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
+                      <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-lilac-wash text-iris-bolt border border-iris-bolt' : 'bg-chalk-canvas text-slate-veil border border-mist-border'}`}>
                         {u.role}
                       </span>
                     </td>
                     <td className="p-3.5 text-right pr-6 space-x-2">
-                      <button onClick={() => handleRoleToggle(u)} className="px-2.5 py-1 rounded-lg border text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+                      <button onClick={() => handleRoleToggle(u)} className="px-3 py-1 rounded-full border border-mist-border bg-paper-white hover:bg-chalk-canvas text-xs font-semibold text-ink-charcoal cursor-pointer">
                         Đổi thành {u.role === 'ADMIN' ? 'TEACHER' : 'ADMIN'}
                       </button>
                     </td>
@@ -785,8 +745,8 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">Danh mục Lớp học & Phân công Giáo viên</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Admin tạo lớp học, gán giáo viên chủ nhiệm/giảng dạy và cấu hình trình độ</p>
+                <h2 className="text-base font-bold text-ink-charcoal">Danh mục Lớp học & Phân công Giáo viên</h2>
+                <p className="text-xs text-slate-veil">Admin tạo lớp học, gán giáo viên phụ trách và thiết lập trình độ</p>
               </div>
               <button
                 onClick={() => {
@@ -796,18 +756,18 @@ export const AdminDashboard: React.FC = () => {
                   setClassTeacherId('');
                   setIsClassModalOpen(true);
                 }}
-                className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                className="flex items-center gap-1.5 text-xs font-semibold px-5 py-2.5 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs cursor-pointer"
               >
-                <Plus size={16} /> Tạo Lớp Học Mới
+                <Plus size={15} /> Tạo Lớp Học Mới
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {classes.map((c) => (
-                <div key={c.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+                <div key={c.id} className="bg-paper-white border border-mist-border rounded-lg p-5 shadow-xs flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-wash text-iris-bolt border border-mist-border">
                         Niveau {c.level}
                       </span>
                       <div className="flex items-center gap-1">
@@ -819,25 +779,25 @@ export const AdminDashboard: React.FC = () => {
                             setClassTeacherId(c.teacherId || '');
                             setIsClassModalOpen(true);
                           }}
-                          className="p-1 text-slate-400 hover:text-blue-600"
+                          className="p-1 text-slate-veil hover:text-iris-bolt cursor-pointer"
                         >
-                          <Edit2 size={14} />
+                          <Edit2 size={13} />
                         </button>
-                        <button onClick={() => handleDeleteClass(c.id)} className="p-1 text-slate-300 hover:text-red-500">
-                          <Trash2 size={14} />
+                        <button onClick={() => handleDeleteClass(c.id)} className="p-1 text-slate-veil hover:text-[#dc2626] cursor-pointer">
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </div>
 
-                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white mt-2">{c.name}</h3>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Giáo viên: <strong className="text-slate-700 dark:text-slate-300">{c.teacher?.name || 'Chưa phân công'}</strong>
+                    <h3 className="text-base font-bold text-ink-charcoal mt-2">{c.name}</h3>
+                    <p className="text-xs text-slate-veil mt-1">
+                      Giáo viên: <strong className="text-ink-charcoal">{c.teacher?.name || 'Chưa phân công'}</strong>
                     </p>
                   </div>
 
-                  <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Sĩ số lớp:</span>
-                    <strong className="text-emerald-600 font-bold">{c.students?.length || 0} học viên</strong>
+                  <div className="mt-5 pt-3 border-t border-mist-border flex justify-between items-center text-xs">
+                    <span className="text-slate-veil">Sĩ số lớp:</span>
+                    <strong className="text-iris-bolt font-bold">{c.students?.length || 0} học viên</strong>
                   </div>
                 </div>
               ))}
@@ -849,44 +809,44 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-4">
             <div className="flex flex-wrap justify-between items-center gap-3">
               <div>
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">Quản lý Học sinh Toàn hệ thống</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Nhập tay từng học viên hoặc import dữ liệu hàng loạt từ file Excel / CSV</p>
+                <h2 className="text-base font-bold text-ink-charcoal">Quản lý Học sinh Toàn hệ thống</h2>
+                <p className="text-xs text-slate-veil">Thêm từng học viên hoặc tải dữ liệu danh sách hàng loạt từ file Excel / CSV</p>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsExcelModalOpen(true)}
-                  className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full bg-paper-white hover:bg-lilac-wash text-iris-bolt border border-iris-bolt transition-colors cursor-pointer"
                 >
-                  <FileSpreadsheet size={15} /> Import từ Excel / CSV
+                  <FileSpreadsheet size={14} /> Import Excel / CSV
                 </button>
                 <button
                   onClick={() => setIsStudentModalOpen(true)}
-                  className="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                  className="flex items-center gap-1.5 text-xs font-semibold px-5 py-2 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs cursor-pointer"
                 >
-                  <Plus size={15} /> Thêm Học Sinh
+                  <Plus size={14} /> Thêm Học Sinh
                 </button>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 w-full sm:w-72">
-                <Search size={14} className="text-slate-400" />
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-paper-white p-3 rounded-lg border border-mist-border">
+              <div className="flex items-center gap-2 bg-chalk-canvas px-3 py-1.5 rounded border border-mist-border w-full sm:w-72">
+                <Search size={14} className="text-slate-veil" />
                 <input
                   type="text"
                   placeholder="Tìm theo tên, email, SĐT..."
                   value={studentSearch}
                   onChange={(e) => setStudentSearch(e.target.value)}
-                  className="bg-transparent text-xs w-full focus:outline-none"
+                  className="bg-transparent text-xs w-full focus:outline-none text-ink-charcoal"
                 />
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-400">Lọc theo Lớp:</span>
+                <span className="text-xs font-semibold text-slate-veil">Lọc theo Lớp:</span>
                 <select
                   value={studentFilterClassId}
                   onChange={(e) => setStudentFilterClassId(e.target.value)}
-                  className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold bg-white dark:bg-slate-800"
+                  className="p-1.5 rounded border border-mist-border text-xs font-semibold bg-paper-white text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   <option value="all">Tất cả các lớp</option>
                   {classes.map(c => <option key={c.id} value={c.id}>{c.name} ({c.level})</option>)}
@@ -894,9 +854,9 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
+            <div className="bg-paper-white border border-mist-border rounded-lg overflow-hidden shadow-xs">
               <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 font-bold border-b border-slate-100 dark:border-slate-800">
+                <thead className="bg-chalk-canvas text-slate-veil font-semibold border-b border-mist-border">
                   <tr>
                     <th className="p-3 pl-6">Họ và tên</th>
                     <th className="p-3">Lớp học</th>
@@ -906,24 +866,24 @@ export const AdminDashboard: React.FC = () => {
                     <th className="p-3 text-right pr-6">Thao tác</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-mist-border">
                   {filteredStudents.length === 0 ? (
-                    <tr><td colSpan={6} className="p-8 text-center text-slate-400">Không tìm thấy học sinh nào.</td></tr>
+                    <tr><td colSpan={6} className="p-8 text-center text-fog-mist">Không tìm thấy học sinh nào.</td></tr>
                   ) : (
                     filteredStudents.map((st) => (
-                      <tr key={st.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                        <td className="p-3 pl-6 font-bold text-slate-900 dark:text-white">{st.name}</td>
-                        <td className="p-3 font-semibold text-emerald-600">{st.class?.name || '—'} ({st.class?.level || '—'})</td>
-                        <td className="p-3 text-slate-500 font-mono">{st.email || '—'}</td>
-                        <td className="p-3 text-slate-500 font-mono">{st.phone || '—'}</td>
+                      <tr key={st.id} className="hover:bg-chalk-canvas transition-colors">
+                        <td className="p-3 pl-6 font-semibold text-ink-charcoal">{st.name}</td>
+                        <td className="p-3 font-semibold text-iris-bolt">{st.class?.name || '—'} ({st.class?.level || '—'})</td>
+                        <td className="p-3 text-slate-veil font-mono">{st.email || '—'}</td>
+                        <td className="p-3 text-slate-veil font-mono">{st.phone || '—'}</td>
                         <td className="p-3">
-                          <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-semibold bg-chalk-canvas border border-mist-border text-slate-veil">
                             {st.evaluations?.[0]?.rating || 'Chưa đánh giá'}
                           </span>
                         </td>
                         <td className="p-3 text-right pr-6">
-                          <button onClick={() => handleDeleteStudent(st.id)} className="p-1 text-slate-300 hover:text-red-500">
-                            <Trash2 size={14} />
+                          <button onClick={() => handleDeleteStudent(st.id)} className="p-1 text-slate-veil hover:text-[#dc2626] cursor-pointer">
+                            <Trash2 size={13} />
                           </button>
                         </td>
                       </tr>
@@ -939,8 +899,8 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">Xếp Lịch Giảng Dạy & Thời Khóa Biểu</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Admin xếp ca học cho từng lớp và toàn quyền chọn giáo viên đứng lớp</p>
+                <h2 className="text-base font-bold text-ink-charcoal">Xếp Lịch Giảng Dạy & Thời Khóa Biểu</h2>
+                <p className="text-xs text-slate-veil">Thiết lập các ca học theo tuần và phân bổ giáo viên đứng lớp tương ứng</p>
               </div>
               <button
                 onClick={() => {
@@ -948,40 +908,40 @@ export const AdminDashboard: React.FC = () => {
                   if (classes.length > 0 && !schedClassId) setSchedClassId(classes[0].id);
                   setIsScheduleModalOpen(true);
                 }}
-                className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white shadow-sm"
+                className="flex items-center gap-1.5 text-xs font-semibold px-5 py-2.5 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs cursor-pointer"
               >
-                <Plus size={16} /> Xếp Ca Dạy Mới
+                <Plus size={15} /> Xếp Ca Dạy Mới
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {schedules.map((sc) => (
-                <div key={sc.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-3 relative group">
+                <div key={sc.id} className="p-4 rounded-lg border border-mist-border bg-paper-white shadow-xs space-y-3 relative group">
                   <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded bg-lilac-wash text-iris-bolt uppercase tracking-wider">
                       {sc.dayOfWeek}
                     </span>
-                    <button onClick={() => handleDeleteSchedule(sc.id)} className="text-slate-300 hover:text-red-500 p-1">
-                      <Trash2 size={14} />
+                    <button onClick={() => handleDeleteSchedule(sc.id)} className="text-slate-veil hover:text-[#dc2626] p-1 cursor-pointer">
+                      <Trash2 size={13} />
                     </button>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">{sc.class?.name}</h4>
-                    <p className="text-[11px] text-emerald-600 font-bold mt-0.5">Trình độ: {sc.class?.level}</p>
+                    <h4 className="text-sm font-bold text-ink-charcoal">{sc.class?.name}</h4>
+                    <p className="text-[11px] text-iris-bolt font-semibold mt-0.5">Trình độ: {sc.class?.level}</p>
                   </div>
 
-                  <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800">
+                  <div className="text-xs text-slate-veil space-y-1.5 pt-2 border-t border-mist-border">
                     <p className="flex items-center gap-2">
-                      <Clock size={13} className="text-amber-600" />
+                      <Clock size={13} className="text-slate-veil" />
                       <span>{sc.startTime} - {sc.endTime}</span>
                     </p>
                     <p className="flex items-center gap-2">
-                      <Users size={13} className="text-blue-600" />
-                      <span>Giáo viên: <strong>{sc.teacher?.name}</strong></span>
+                      <Users size={13} className="text-slate-veil" />
+                      <span>Giáo viên: <strong className="text-ink-charcoal">{sc.teacher?.name}</strong></span>
                     </p>
                     <p className="flex items-center gap-2">
-                      <MapPin size={13} className="text-purple-600" />
+                      <MapPin size={13} className="text-slate-veil" />
                       <span>{sc.room || 'Chưa xếp phòng'}</span>
                     </p>
                   </div>
@@ -994,41 +954,41 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {isClassModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-6 space-y-4 border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-md p-6 space-y-4 border border-mist-border shadow-md">
+            <h3 className="font-bold text-base text-ink-charcoal">
               {editingClass ? 'Sửa Thông Tin Lớp Học' : 'Tạo Lớp Học Mới'}
             </h3>
             <form onSubmit={handleSaveClass} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Tên lớp học</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Tên lớp học</label>
                 <input
                   type="text"
                   required
                   placeholder="z.B. A1.1 - Khóa Tối 2-4-6"
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Trình độ (Niveau)</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Trình độ (Niveau)</label>
                 <select
                   value={classLevel}
                   onChange={(e) => setClassLevel(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   {ALL_LEVELS.map((lvl) => <option key={lvl} value={lvl}>{lvl}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Chỉ định giáo viên giảng dạy</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Chỉ định giáo viên giảng dạy</label>
                 <select
                   value={classTeacherId}
                   onChange={(e) => setClassTeacherId(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   <option value="">-- Chưa chỉ định giáo viên --</option>
                   {users.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
@@ -1036,8 +996,8 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <div className="flex justify-end gap-2 pt-3">
-                <button type="button" onClick={() => setIsClassModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
-                <button type="submit" className="text-xs font-bold px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">Lưu Lớp Học</button>
+                <button type="button" onClick={() => setIsClassModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
+                <button type="submit" className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full cursor-pointer">Lưu Lớp Học</button>
               </div>
             </form>
           </div>
@@ -1045,58 +1005,58 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {isStudentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-6 space-y-4 border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Thêm Học Sinh Mới</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-md p-6 space-y-4 border border-mist-border shadow-md">
+            <h3 className="font-bold text-base text-ink-charcoal">Thêm Học Sinh Mới</h3>
             <form onSubmit={handleAddSingleStudent} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Xếp vào lớp:</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Xếp vào lớp:</label>
                 <select
                   value={singleStudentClassId}
                   onChange={(e) => setSingleStudentClassId(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   {classes.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.level})</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Họ và tên học sinh:</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Họ và tên học sinh:</label>
                 <input
                   type="text"
                   required
                   placeholder="z.B. Nguyễn Văn An"
                   value={singleStudentName}
                   onChange={(e) => setSingleStudentName(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Email:</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Email:</label>
                 <input
                   type="email"
                   placeholder="an.nguyen@email.com"
                   value={singleStudentEmail}
                   onChange={(e) => setSingleStudentEmail(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Số điện thoại:</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Số điện thoại:</label>
                 <input
                   type="text"
                   placeholder="0912345678"
                   value={singleStudentPhone}
                   onChange={(e) => setSingleStudentPhone(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
 
               <div className="flex justify-end gap-2 pt-3">
-                <button type="button" onClick={() => setIsStudentModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
-                <button type="submit" className="text-xs font-bold px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">Thêm Học Sinh</button>
+                <button type="button" onClick={() => setIsStudentModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
+                <button type="submit" className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full cursor-pointer">Thêm Học Sinh</button>
               </div>
             </form>
           </div>
@@ -1104,28 +1064,28 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {isExcelModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl h-[85vh] p-6 flex flex-col border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-2xl h-[85vh] p-6 flex flex-col border border-mist-border shadow-md overflow-hidden">
+            <div className="flex justify-between items-center pb-3 border-b border-mist-border">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center">
-                  <FileSpreadsheet size={18} />
+                <div className="w-8 h-8 rounded bg-lilac-wash text-iris-bolt flex items-center justify-center">
+                  <FileSpreadsheet size={16} />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Import Học Sinh từ Excel / CSV</h3>
-                  <p className="text-xs text-slate-500">Copy các dòng từ file Excel rồi dán trực tiếp hoặc tải file CSV lên</p>
+                  <h3 className="font-bold text-base text-ink-charcoal">Import Học Sinh từ Excel / CSV</h3>
+                  <p className="text-xs text-slate-veil">Dán trực tiếp các dòng từ file Excel hoặc tải file .CSV lên</p>
                 </div>
               </div>
-              <button onClick={() => setIsExcelModalOpen(false)} className="p-1 text-slate-400"><X size={18} /></button>
+              <button onClick={() => setIsExcelModalOpen(false)} className="p-1 text-slate-veil hover:text-ink-charcoal cursor-pointer"><X size={18} /></button>
             </div>
 
             <div className="flex-1 overflow-y-auto py-3 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Xếp danh sách này vào lớp:</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Xếp danh sách này vào lớp:</label>
                 <select
                   value={excelTargetClassId}
                   onChange={(e) => setExcelTargetClassId(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   {classes.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.level})</option>)}
                 </select>
@@ -1133,8 +1093,8 @@ export const AdminDashboard: React.FC = () => {
 
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-semibold text-slate-600">Dán dữ liệu từ Excel (Cột: Họ tên | Email | SĐT):</label>
-                  <label className="text-xs font-bold text-teal-600 hover:underline cursor-pointer">
+                  <label className="text-xs font-semibold text-slate-veil">Dán dữ liệu (Cột: Họ tên | Email | SĐT):</label>
+                  <label className="text-xs font-semibold text-iris-bolt hover:underline cursor-pointer">
                     Hoặc tải file .CSV lên
                     <input type="file" accept=".csv" onChange={handleFileUploadCsv} className="hidden" />
                   </label>
@@ -1144,38 +1104,38 @@ export const AdminDashboard: React.FC = () => {
                   value={excelPasteData}
                   onChange={(e) => setExcelPasteData(e.target.value)}
                   placeholder={`Nguyễn Văn A\tan.nguyen@email.com\t0912345678\nTrần Thị B\tb.tran@email.com\t0987654321`}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono"
+                  className="w-full text-xs p-2.5 rounded border border-mist-border bg-chalk-canvas font-mono text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
                 <button
                   type="button"
                   onClick={handleParseExcelPaste}
-                  className="mt-2 text-xs font-bold px-4 py-2 bg-slate-800 text-white rounded-xl"
+                  className="mt-2 text-xs font-semibold px-4 py-2 bg-paper-white border border-mist-border text-ink-charcoal hover:bg-chalk-canvas rounded cursor-pointer"
                 >
                   Xác nhận & Xem trước dữ liệu
                 </button>
               </div>
 
               {parsedExcelStudents.length > 0 && (
-                <div className="border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
-                  <div className="p-2.5 px-4 bg-teal-50 dark:bg-teal-950/40 text-teal-800 font-bold text-xs flex justify-between">
+                <div className="border border-mist-border rounded overflow-hidden">
+                  <div className="p-2.5 px-4 bg-chalk-canvas text-ink-charcoal font-semibold text-xs flex justify-between border-b border-mist-border">
                     <span>Xem trước ({parsedExcelStudents.length} học viên hợp lệ):</span>
-                    <span>Sẵn sàng nạp</span>
+                    <span className="text-iris-bolt">Sẵn sàng nạp</span>
                   </div>
                   <div className="max-h-48 overflow-y-auto">
                     <table className="w-full text-xs text-left">
-                      <thead className="bg-slate-50 dark:bg-slate-800 text-slate-400">
+                      <thead className="bg-paper-white text-slate-veil border-b border-mist-border">
                         <tr>
                           <th className="p-2 pl-4">Họ và tên</th>
                           <th className="p-2">Email</th>
                           <th className="p-2">Số điện thoại</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      <tbody className="divide-y divide-mist-border">
                         {parsedExcelStudents.map((st, i) => (
-                          <tr key={i}>
-                            <td className="p-2 pl-4 font-bold">{st.name}</td>
-                            <td className="p-2 text-slate-500 font-mono">{st.email || '—'}</td>
-                            <td className="p-2 text-slate-500 font-mono">{st.phone || '—'}</td>
+                          <tr key={i} className="hover:bg-chalk-canvas">
+                            <td className="p-2 pl-4 font-semibold text-ink-charcoal">{st.name}</td>
+                            <td className="p-2 text-slate-veil font-mono">{st.email || '—'}</td>
+                            <td className="p-2 text-slate-veil font-mono">{st.phone || '—'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1185,13 +1145,13 @@ export const AdminDashboard: React.FC = () => {
               )}
             </div>
 
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onClick={() => setIsExcelModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
+            <div className="pt-3 border-t border-mist-border flex justify-end gap-2">
+              <button type="button" onClick={() => setIsExcelModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
               <button
                 type="button"
                 disabled={parsedExcelStudents.length === 0 || isImportingExcel}
                 onClick={handleExecuteBatchImport}
-                className="text-xs font-bold px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-xs disabled:opacity-40"
+                className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full shadow-xs disabled:opacity-40 cursor-pointer"
               >
                 {isImportingExcel ? 'Đang import...' : `Lưu Toàn Bộ (${parsedExcelStudents.length} học viên)`}
               </button>
@@ -1201,38 +1161,38 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {isScheduleModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-6 space-y-4 border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Xếp Ca Học Cho Trung Tâm</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-md p-6 space-y-4 border border-mist-border shadow-md">
+            <h3 className="font-bold text-base text-ink-charcoal">Xếp Ca Học Cho Trung Tâm</h3>
             <form onSubmit={handleCreateSchedule} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Chọn lớp học</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Chọn lớp học</label>
                 <select
                   value={schedClassId}
                   onChange={(e) => setSchedClassId(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   {classes.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.level})</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Chỉ định giáo viên đứng lớp</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Chỉ định giáo viên đứng lớp</label>
                 <select
                   value={schedTeacherId}
                   onChange={(e) => setSchedTeacherId(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-amber-600"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-iris-bolt focus:outline-none cursor-pointer"
                 >
                   {users.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Thứ trong tuần</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Thứ trong tuần</label>
                 <select
                   value={schedDay}
                   onChange={(e) => setSchedDay(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   {DAYS_OF_WEEK.map((d) => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -1240,41 +1200,41 @@ export const AdminDashboard: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Giờ bắt đầu</label>
+                  <label className="block text-xs font-semibold text-slate-veil mb-1">Giờ bắt đầu</label>
                   <input
                     type="text"
                     required
                     value={schedStart}
                     onChange={(e) => setSchedStart(e.target.value)}
-                    className="w-full text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                    className="w-full text-xs p-2 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Giờ kết thúc</label>
+                  <label className="block text-xs font-semibold text-slate-veil mb-1">Giờ kết thúc</label>
                   <input
                     type="text"
                     required
                     value={schedEnd}
                     onChange={(e) => setSchedEnd(e.target.value)}
-                    className="w-full text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                    className="w-full text-xs p-2 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Phòng học</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Phòng học</label>
                 <input
                   type="text"
                   value={schedRoom}
                   onChange={(e) => setSchedRoom(e.target.value)}
                   placeholder="z.B. Phòng 201 hoặc Online Zoom"
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
 
               <div className="flex justify-end gap-2 pt-3">
-                <button type="button" onClick={() => setIsScheduleModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
-                <button type="submit" className="text-xs font-bold px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl">Lưu Ca Dạy</button>
+                <button type="button" onClick={() => setIsScheduleModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
+                <button type="submit" className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full cursor-pointer">Lưu Ca Dạy</button>
               </div>
             </form>
           </div>
@@ -1282,47 +1242,47 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {isNewBookModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4 border border-slate-200 dark:border-slate-800">
-            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Thêm Cuốn Sách Giáo Trình Mới</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-md shadow-md p-6 space-y-4 border border-mist-border">
+            <h3 className="font-bold text-base text-ink-charcoal">Thêm Cuốn Sách Giáo Trình Mới</h3>
             <form onSubmit={handleCreateBook} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Tên cuốn sách</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Tên cuốn sách</label>
                 <input
                   type="text"
                   required
                   placeholder="z.B. Aspekte Neu B2"
                   value={newBookTitle}
                   onChange={(e) => setNewBookTitle(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Nhà xuất bản</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Nhà xuất bản</label>
                 <input
                   type="text"
                   placeholder="Klett Verlag"
                   value={newBookPublisher}
                   onChange={(e) => setNewBookPublisher(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Trình độ (Niveau)</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Trình độ (Niveau)</label>
                 <select
                   value={newBookLevel}
                   onChange={(e) => setNewBookLevel(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   {ALL_LEVELS.map((lvl) => <option key={lvl} value={lvl}>{lvl}</option>)}
                 </select>
               </div>
 
               <div className="flex justify-end gap-2 pt-3">
-                <button type="button" onClick={() => setIsNewBookModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
-                <button type="submit" disabled={isCreatingBook} className="text-xs font-bold px-5 py-2.5 bg-purple-600 text-white rounded-xl">
+                <button type="button" onClick={() => setIsNewBookModalOpen(false)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
+                <button type="submit" disabled={isCreatingBook} className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full cursor-pointer">
                   {isCreatingBook ? 'Đang tạo...' : 'Tạo Sách'}
                 </button>
               </div>
@@ -1332,45 +1292,45 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {editingBook && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4 border border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-md shadow-md p-6 space-y-4 border border-mist-border">
             <div className="flex justify-between items-center">
-              <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Sửa Thông Tin Sách</h3>
-              <button onClick={() => setEditingBook(null)} className="p-1 text-slate-400"><X size={16} /></button>
+              <h3 className="font-bold text-base text-ink-charcoal">Sửa Thông Tin Sách</h3>
+              <button onClick={() => setEditingBook(null)} className="p-1 text-slate-veil hover:text-ink-charcoal cursor-pointer"><X size={16} /></button>
             </div>
             <form onSubmit={handleUpdateBook} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Tên cuốn sách</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Tên cuốn sách</label>
                 <input
                   type="text"
                   required
                   value={editingBook.title}
                   onChange={(e) => setEditingBook({ ...editingBook, title: e.target.value })}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Nhà xuất bản</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Nhà xuất bản</label>
                 <input
                   type="text"
                   value={editingBook.publisher}
                   onChange={(e) => setEditingBook({ ...editingBook, publisher: e.target.value })}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Trình độ (Niveau)</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Trình độ (Niveau)</label>
                 <select
                   value={editingBook.level}
                   onChange={(e) => setEditingBook({ ...editingBook, level: e.target.value })}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border font-bold"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer"
                 >
                   {ALL_LEVELS.map((lvl) => <option key={lvl} value={lvl}>{lvl}</option>)}
                 </select>
               </div>
               <div className="flex justify-end gap-2 pt-3">
-                <button type="button" onClick={() => setEditingBook(null)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
-                <button type="submit" disabled={isUpdatingBook} className="text-xs font-bold px-5 py-2.5 bg-blue-600 text-white rounded-xl">Lưu Thay Đổi</button>
+                <button type="button" onClick={() => setEditingBook(null)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
+                <button type="submit" disabled={isUpdatingBook} className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full cursor-pointer">Lưu Thay Đổi</button>
               </div>
             </form>
           </div>
@@ -1378,27 +1338,27 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {inspectingLektion && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-3xl h-[88vh] shadow-2xl p-6 flex flex-col border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                <ListFilter size={18} className="text-purple-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-3xl h-[88vh] shadow-md p-6 flex flex-col border border-mist-border overflow-hidden">
+            <div className="flex justify-between items-center pb-3 border-b border-mist-border">
+              <h3 className="font-bold text-base text-ink-charcoal flex items-center gap-2">
+                <ListFilter size={16} className="text-iris-bolt" />
                 Soát & Sửa Từ Vựng Lektion {inspectingLektion.lektionNumber}: {inspectingLektion.title}
               </h3>
-              <button onClick={() => setInspectingLektion(null)} className="p-1 text-slate-400"><X size={18} /></button>
+              <button onClick={() => setInspectingLektion(null)} className="p-1 text-slate-veil hover:text-ink-charcoal cursor-pointer"><X size={16} /></button>
             </div>
             <div className="flex-1 overflow-y-auto py-3 space-y-2">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-bold text-slate-700">Danh sách ({lektionVocabList.length} từ):</span>
+                <span className="text-xs font-bold text-ink-charcoal">Danh sách ({lektionVocabList.length} từ):</span>
                 <button
                   onClick={() => setLektionVocabList([...lektionVocabList, { id: `w-${Date.now()}`, article: '-', german: '', translation: '', plural: '', example: '' }])}
-                  className="text-xs font-bold text-purple-600 hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-iris-bolt hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <Plus size={14} /> + Thêm từ mới
+                  <Plus size={13} /> + Thêm từ mới
                 </button>
               </div>
               {lektionVocabList.map((v, i) => (
-                <div key={i} className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div key={i} className="flex items-center gap-2 bg-chalk-canvas p-2 rounded border border-mist-border">
                   <select
                     value={v.article || '-'}
                     onChange={(e) => {
@@ -1406,7 +1366,7 @@ export const AdminDashboard: React.FC = () => {
                       copy[i].article = e.target.value;
                       setLektionVocabList(copy);
                     }}
-                    className="text-xs font-bold p-1 rounded border bg-white dark:bg-slate-800"
+                    className="text-xs font-bold p-1 rounded border border-mist-border bg-paper-white text-ink-charcoal cursor-pointer"
                   >
                     <option value="-">-</option>
                     <option value="der">der</option>
@@ -1422,7 +1382,7 @@ export const AdminDashboard: React.FC = () => {
                       copy[i].german = e.target.value;
                       setLektionVocabList(copy);
                     }}
-                    className="w-1/3 text-xs p-1.5 rounded border bg-white dark:bg-slate-800 font-bold"
+                    className="w-1/3 text-xs p-1.5 rounded border border-mist-border bg-paper-white font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                   />
                   <input
                     type="text"
@@ -1433,7 +1393,7 @@ export const AdminDashboard: React.FC = () => {
                       copy[i].translation = e.target.value;
                       setLektionVocabList(copy);
                     }}
-                    className="w-1/3 text-xs p-1.5 rounded border bg-white dark:bg-slate-800"
+                    className="w-1/3 text-xs p-1.5 rounded border border-mist-border bg-paper-white text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                   />
                   <input
                     type="text"
@@ -1444,17 +1404,17 @@ export const AdminDashboard: React.FC = () => {
                       copy[i].example = e.target.value;
                       setLektionVocabList(copy);
                     }}
-                    className="flex-1 text-xs p-1.5 rounded border bg-white dark:bg-slate-800 italic"
+                    className="flex-1 text-xs p-1.5 rounded border border-mist-border bg-paper-white italic text-slate-veil focus:outline-none focus:border-iris-bolt"
                   />
-                  <button onClick={() => setLektionVocabList(lektionVocabList.filter((_, idx) => idx !== i))} className="text-slate-300 hover:text-red-600 p-1">
-                    <Trash2 size={14} />
+                  <button onClick={() => setLektionVocabList(lektionVocabList.filter((_, idx) => idx !== i))} className="text-slate-veil hover:text-[#dc2626] p-1 cursor-pointer">
+                    <Trash2 size={13} />
                   </button>
                 </div>
               ))}
             </div>
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
-              <button type="button" onClick={() => setInspectingLektion(null)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
-              <button type="button" disabled={isSavingContents} onClick={handleSaveLektionContents} className="text-xs font-bold px-5 py-2.5 bg-purple-600 text-white rounded-xl">
+            <div className="pt-3 border-t border-mist-border flex justify-end gap-2">
+              <button type="button" onClick={() => setInspectingLektion(null)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
+              <button type="button" disabled={isSavingContents} onClick={handleSaveLektionContents} className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full cursor-pointer">
                 {isSavingContents ? 'Đang lưu...' : 'Lưu Danh Sách Từ Vựng'}
               </button>
             </div>
@@ -1463,48 +1423,48 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {editingLektion && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4 border border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-md shadow-md p-6 space-y-4 border border-mist-border">
             <div className="flex justify-between items-center">
-              <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Sửa Lektion</h3>
-              <button onClick={() => setEditingLektion(null)} className="p-1 text-slate-400"><X size={16} /></button>
+              <h3 className="font-bold text-base text-ink-charcoal">Sửa Lektion</h3>
+              <button onClick={() => setEditingLektion(null)} className="p-1 text-slate-veil hover:text-ink-charcoal cursor-pointer"><X size={16} /></button>
             </div>
             <form onSubmit={handleUpdateLektion} className="space-y-3">
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Số Lektion</label>
+                  <label className="block text-xs font-semibold text-slate-veil mb-1">Số Lektion</label>
                   <input
                     type="number"
                     min={1}
                     required
                     value={editingLektion.lektionNumber}
                     onChange={(e) => setEditingLektion({ ...editingLektion, lektionNumber: Number(e.target.value) })}
-                    className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border font-bold"
+                    className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Tiêu đề bài</label>
+                  <label className="block text-xs font-semibold text-slate-veil mb-1">Tiêu đề bài</label>
                   <input
                     type="text"
                     required
                     value={editingLektion.title}
                     onChange={(e) => setEditingLektion({ ...editingLektion, title: e.target.value })}
-                    className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border font-bold"
+                    className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Chủ đề bài học (Thema)</label>
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Chủ đề bài học (Thema)</label>
                 <input
                   type="text"
                   value={editingLektion.theme || ''}
                   onChange={(e) => setEditingLektion({ ...editingLektion, theme: e.target.value })}
-                  className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border"
+                  className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border text-ink-charcoal focus:outline-none focus:border-iris-bolt"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-3">
-                <button type="button" onClick={() => setEditingLektion(null)} className="text-xs font-semibold px-4 py-2 text-slate-500">Hủy</button>
-                <button type="submit" disabled={isUpdatingLektion} className="text-xs font-bold px-5 py-2.5 bg-purple-600 text-white rounded-xl">Lưu Lektion</button>
+                <button type="button" onClick={() => setEditingLektion(null)} className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer">Hủy</button>
+                <button type="submit" disabled={isUpdatingLektion} className="text-xs font-semibold px-5 py-2.5 bg-iris-bolt hover:opacity-90 text-paper-white rounded-full cursor-pointer">Lưu Lektion</button>
               </div>
             </form>
           </div>
@@ -1512,21 +1472,21 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {selectedBookForScan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl h-[90vh] shadow-2xl p-6 flex flex-col border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="font-extrabold text-base text-purple-900 dark:text-purple-400 flex items-center gap-2">
-                <Sparkles size={18} className="text-purple-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4">
+          <div className="bg-paper-white rounded-lg w-full max-w-2xl h-[90vh] shadow-md p-6 flex flex-col border border-mist-border overflow-hidden">
+            <div className="pb-3 border-b border-mist-border">
+              <h3 className="font-bold text-base text-ink-charcoal flex items-center gap-2">
+                <Sparkles size={16} className="text-iris-bolt" />
                 AI Tự Quét Mục Lục: {selectedBookForScan.title}
               </h3>
-              <p className="text-xs text-slate-500">Tải file PDF sách lên, AI sẽ tự đọc trang mục lục và trích xuất từng Lektion</p>
+              <p className="text-xs text-slate-veil">Tải file PDF sách lên, AI sẽ tự đọc trang mục lục và trích xuất từng Lektion</p>
             </div>
             <div className="p-1 overflow-y-auto flex-1 space-y-4 my-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">File PDF cuốn sách:</label>
-                <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-purple-200 rounded-xl bg-purple-50/30 cursor-pointer text-center">
-                  <UploadCloud size={30} className="text-purple-600 mb-1" />
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                <label className="block text-xs font-semibold text-slate-veil mb-1">File PDF cuốn sách:</label>
+                <label className="flex flex-col items-center justify-center p-5 border-2 border-dashed border-mist-border rounded-lg bg-chalk-canvas hover:border-iris-bolt cursor-pointer text-center transition-colors">
+                  <UploadCloud size={28} className="text-iris-bolt mb-1" />
+                  <span className="text-xs font-semibold text-ink-charcoal">
                     {fullPdfFile ? fullPdfFile.name : 'Nhấp để chọn file PDF cuốn sách'}
                   </span>
                   <input
@@ -1544,8 +1504,8 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {isDetectingToc && (
-                <div className="py-6 text-center text-xs font-bold text-purple-700 animate-pulse">
-                  AI đang đọc trang mục lục và phân tích các Lektion...
+                <div className="py-6 text-center text-xs font-semibold text-iris-bolt animate-pulse">
+                  AI đang đọc trang mục lục và phân tích danh mục bài học...
                 </div>
               )}
 
@@ -1554,9 +1514,9 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleDetectTOC}
-                    className="flex items-center gap-2 text-xs font-bold px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-md"
+                    className="flex items-center gap-2 text-xs font-semibold px-6 py-2.5 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs cursor-pointer"
                   >
-                    <Search size={16} /> Bắt đầu Quét Mục Lục AI
+                    <Search size={15} /> Bắt đầu Quét Mục Lục AI
                   </button>
                 </div>
               )}
@@ -1564,19 +1524,19 @@ export const AdminDashboard: React.FC = () => {
               {detectedToc.length > 0 && (
                 <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
                   {detectedToc.map((item, idx) => (
-                    <div key={idx} className="p-3 rounded-xl border flex items-center justify-between gap-3 bg-white dark:bg-slate-800">
+                    <div key={idx} className="p-3 rounded border border-mist-border flex items-center justify-between gap-3 bg-paper-white">
                       <div>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800 mr-2">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-lilac-wash text-iris-bolt mr-2">
                           Lektion {item.lektionNumber}
                         </span>
-                        <strong className="text-xs">{item.title}</strong>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Trang {item.startPage} - {item.endPage}</p>
+                        <strong className="text-xs text-ink-charcoal">{item.title}</strong>
+                        <p className="text-[11px] text-slate-veil mt-0.5">Trang {item.startPage} - {item.endPage}</p>
                       </div>
                       <button
                         type="button"
                         disabled={ingestingIndex !== null || item.isIngested}
                         onClick={() => handleIngestSingleLektion(item, idx)}
-                        className={`text-xs font-bold px-3 py-1.5 rounded-lg text-white ${item.isIngested ? 'bg-emerald-600' : 'bg-purple-600 hover:bg-purple-700'}`}
+                        className={`text-xs font-semibold px-3 py-1.5 rounded-full text-paper-white cursor-pointer ${item.isIngested ? 'bg-[#16a34a]' : 'bg-iris-bolt hover:opacity-90'}`}
                       >
                         {item.isIngested ? 'Đã nạp' : ingestingIndex === idx ? 'Đang nạp...' : 'Nạp bài này'}
                       </button>
@@ -1585,7 +1545,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+            <div className="pt-3 border-t border-mist-border flex justify-end">
               <button
                 type="button"
                 onClick={() => {
@@ -1593,7 +1553,7 @@ export const AdminDashboard: React.FC = () => {
                   setFullPdfFile(null);
                   setDetectedToc([]);
                 }}
-                className="text-xs font-semibold px-4 py-2 text-slate-500"
+                className="text-xs font-semibold px-4 py-2 text-slate-veil cursor-pointer"
               >
                 Đóng
               </button>

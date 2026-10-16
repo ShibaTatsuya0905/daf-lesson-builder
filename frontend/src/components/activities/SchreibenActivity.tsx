@@ -9,10 +9,10 @@ export const SchreibenActivity: React.FC<{ block: Block }> = ({ block }) => {
   const data = block.data || {};
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <div className="flex items-center gap-1.5 mb-2 text-xs font-bold text-pink-800">
-          <PenTool size={15} className="text-pink-600" />
+        <div className="flex items-center gap-1.5 mb-2 text-xs font-semibold text-ink-charcoal">
+          <PenTool size={15} className="text-iris-bolt" />
           <span>Schreibaufgabe (Đề bài & Nhiệm vụ viết)</span>
         </div>
         <TipTapEditor
@@ -22,10 +22,10 @@ export const SchreibenActivity: React.FC<{ block: Block }> = ({ block }) => {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-3 bg-pink-50/40 border border-pink-200 rounded-xl space-y-1.5">
-          <div className="flex items-center gap-1 text-xs font-bold text-pink-800">
-            <Key size={13} className="text-pink-600" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <div className="p-3 bg-chalk-canvas border border-mist-border rounded-lg space-y-1.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-ink-charcoal">
+            <Key size={13} className="text-iris-bolt" />
             <span>Hilfswörter (Từ khóa gợi ý - cách nhau bởi dấu phẩy)</span>
           </div>
           <input
@@ -37,14 +37,14 @@ export const SchreibenActivity: React.FC<{ block: Block }> = ({ block }) => {
                 wordBank: e.target.value.split(',').map((w) => w.trim()).filter(Boolean),
               })
             }
-            className="w-full text-xs p-2.5 rounded-lg bg-white border border-pink-200 focus:outline-none text-slate-800"
+            className="w-full text-xs p-2 rounded bg-paper-white border border-mist-border focus:outline-none focus:border-iris-bolt text-ink-charcoal"
           />
         </div>
 
-        <div className="p-3 bg-pink-50/40 border border-pink-200 rounded-xl space-y-1.5">
-          <div className="flex items-center gap-1 text-xs font-bold text-pink-800">
-            <Quote size={13} className="text-pink-600" />
-            <span>Satzanfänge (Gợi ý mở đầu câu - cách nhau bởi dấu |)</span>
+        <div className="p-3 bg-chalk-canvas border border-mist-border rounded-lg space-y-1.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-ink-charcoal">
+            <Quote size={13} className="text-iris-bolt" />
+            <span>Satzanfänge (Mở đầu câu - cách nhau bởi dấu |)</span>
           </div>
           <input
             type="text"
@@ -55,67 +55,66 @@ export const SchreibenActivity: React.FC<{ block: Block }> = ({ block }) => {
                 sentenceStarters: e.target.value.split('|').map((w) => w.trim()).filter(Boolean),
               })
             }
-            className="w-full text-xs p-2.5 rounded-lg bg-white border border-pink-200 focus:outline-none text-slate-800"
+            className="w-full text-xs p-2 rounded bg-paper-white border border-mist-border focus:outline-none focus:border-iris-bolt text-ink-charcoal"
           />
         </div>
       </div>
 
-      {/* KHU VỰC DÀNH CHO GIÁO VIÊN: BÀI MẪU VÀ TIÊU CHÍ CHẤM (THƯỜNG DO AI SINH RA) */}
-      <div className="p-4 bg-emerald-50/50 border border-emerald-200 rounded-2xl space-y-4">
+      <div className="p-4 bg-chalk-canvas border border-mist-border rounded-lg space-y-3.5">
         <div>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 mb-2">
-            <Sparkles size={14} className="text-emerald-600" />
-            <span>Musterlösung (Bài văn mẫu đạt điểm tối đa - Chỉ giáo viên thấy)</span>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-ink-charcoal mb-2">
+            <Sparkles size={14} className="text-iris-bolt" />
+            <span>Musterlösung (Bài văn mẫu đạt điểm tối đa - Dành cho giáo viên)</span>
           </div>
           <textarea
             rows={4}
             value={data.sampleSolution || ''}
             placeholder="Bài viết mẫu chuẩn CEFR..."
             onChange={(e) => updateBlockData(block.id, { sampleSolution: e.target.value })}
-            className="w-full text-xs p-3 rounded-xl bg-white border border-emerald-200 focus:outline-none focus:border-emerald-500 text-slate-800 leading-relaxed"
+            className="w-full text-xs p-3 rounded bg-paper-white border border-mist-border focus:outline-none focus:border-iris-bolt text-ink-charcoal leading-relaxed"
           />
         </div>
 
-        <div className="pt-2 border-t border-emerald-200/60">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 mb-2">
-            <Award size={14} className="text-emerald-600" />
+        <div className="pt-2 border-t border-mist-border">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-ink-charcoal mb-2">
+            <Award size={14} className="text-iris-bolt" />
             <span>Bewertungskriterien (Khung chấm điểm CEFR)</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-500">Inhalt (Nội dung)</label>
+              <label className="text-[11px] text-slate-veil">Inhalt (Nội dung)</label>
               <input 
                 type="number" 
                 value={data.rubric?.taskCompletion || 0} 
                 onChange={(e) => updateBlockData(block.id, { rubric: { ...data.rubric, taskCompletion: Number(e.target.value) } })}
-                className="w-full p-2 bg-white border border-emerald-200 rounded text-center font-bold"
+                className="w-full p-2 bg-paper-white border border-mist-border rounded text-center font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-500">Kohärenz (Mạch lạc)</label>
+              <label className="text-[11px] text-slate-veil">Kohärenz (Mạch lạc)</label>
               <input 
                 type="number" 
                 value={data.rubric?.coherence || 0} 
                 onChange={(e) => updateBlockData(block.id, { rubric: { ...data.rubric, coherence: Number(e.target.value) } })}
-                className="w-full p-2 bg-white border border-emerald-200 rounded text-center font-bold"
+                className="w-full p-2 bg-paper-white border border-mist-border rounded text-center font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-500">Wortschatz (Từ vựng)</label>
+              <label className="text-[11px] text-slate-veil">Wortschatz (Từ vựng)</label>
               <input 
                 type="number" 
                 value={data.rubric?.vocabulary || 0} 
                 onChange={(e) => updateBlockData(block.id, { rubric: { ...data.rubric, vocabulary: Number(e.target.value) } })}
-                className="w-full p-2 bg-white border border-emerald-200 rounded text-center font-bold"
+                className="w-full p-2 bg-paper-white border border-mist-border rounded text-center font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-500">Grammatik (Ngữ pháp)</label>
+              <label className="text-[11px] text-slate-veil">Grammatik (Ngữ pháp)</label>
               <input 
                 type="number" 
                 value={data.rubric?.grammar || 0} 
                 onChange={(e) => updateBlockData(block.id, { rubric: { ...data.rubric, grammar: Number(e.target.value) } })}
-                className="w-full p-2 bg-white border border-emerald-200 rounded text-center font-bold"
+                className="w-full p-2 bg-paper-white border border-mist-border rounded text-center font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
               />
             </div>
           </div>

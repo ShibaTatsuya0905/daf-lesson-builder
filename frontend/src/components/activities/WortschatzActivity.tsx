@@ -55,12 +55,12 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
 
   return (
     <div className="space-y-3.5">
-      <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-purple-50/70 border border-purple-200 rounded-xl">
+      <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-chalk-canvas border border-mist-border rounded-lg">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleAddWord}
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow-sm transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs transition-opacity cursor-pointer"
           >
             <Plus size={14} /> + Wort
           </button>
@@ -69,9 +69,9 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
             type="button"
             onClick={handleAIExtend}
             disabled={isAiLoading}
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-purple-200 hover:bg-purple-100/60 text-purple-700 shadow-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full bg-paper-white border border-mist-border hover:border-iris-bolt text-iris-bolt shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
-            {isAiLoading ? <Loader2 size={13} className="animate-spin text-purple-600" /> : <Sparkles size={13} className="text-purple-600" />}
+            {isAiLoading ? <Loader2 size={13} className="animate-spin text-iris-bolt" /> : <Sparkles size={13} className="text-iris-bolt" />}
             <span>Wörter ergänzen (AI)</span>
           </button>
         </div>
@@ -81,10 +81,10 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
             type="button"
             onClick={() => generateFlashcardsFromVocab(block.id)}
             disabled={vocabList.length === 0}
-            className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-purple-300 text-slate-700 shadow-sm transition-colors disabled:opacity-40"
-            title="Tự động tạo Block Karteikarten từ bảng từ vựng này"
+            className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full bg-paper-white border border-mist-border hover:border-iris-bolt text-slate-veil hover:text-iris-bolt shadow-xs transition-colors disabled:opacity-40 cursor-pointer"
+            title="Tạo Block thẻ từ vựng từ bảng này"
           >
-            <Layers size={13} className="text-indigo-500" />
+            <Layers size={13} className="text-iris-bolt" />
             <span>Karteikarten erstellen</span>
           </button>
 
@@ -92,10 +92,10 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
             type="button"
             onClick={() => generateQuizFromVocab(block.id)}
             disabled={vocabList.length === 0}
-            className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-purple-300 text-slate-700 shadow-sm transition-colors disabled:opacity-40"
-            title="Tự động tạo Quiz trắc nghiệm mạo từ và ý nghĩa"
+            className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full bg-paper-white border border-mist-border hover:border-iris-bolt text-slate-veil hover:text-iris-bolt shadow-xs transition-colors disabled:opacity-40 cursor-pointer"
+            title="Tạo Quiz trắc nghiệm mạo từ và ý nghĩa"
           >
-            <HelpCircle size={13} className="text-amber-500" />
+            <HelpCircle size={13} className="text-iris-bolt" />
             <span>Quiz erstellen</span>
           </button>
 
@@ -103,49 +103,49 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
             type="button"
             onClick={() => generateSpeakingFromVocab(block.id)}
             disabled={vocabList.length === 0}
-            className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-purple-300 text-slate-700 shadow-sm transition-colors disabled:opacity-40"
-            title="Tự động tạo bài tập Nói cặp sử dụng các từ vựng này"
+            className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full bg-paper-white border border-mist-border hover:border-iris-bolt text-slate-veil hover:text-iris-bolt shadow-xs transition-colors disabled:opacity-40 cursor-pointer"
+            title="Tạo bài tập Nói cặp sử dụng các từ vựng này"
           >
-            <MessageSquare size={13} className="text-blue-500" />
+            <MessageSquare size={13} className="text-iris-bolt" />
             <span>Sprechübung erstellen</span>
           </button>
         </div>
       </div>
 
-      <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm">
+      <div className="overflow-x-auto border border-mist-border rounded-lg bg-paper-white shadow-xs">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+            <tr className="bg-chalk-canvas text-slate-veil font-semibold border-b border-mist-border">
               <th className="py-2.5 px-3 w-20">Artikel</th>
               <th className="py-2.5 px-3 min-w-[150px]">Deutsch (Từ / Cụm từ)</th>
               <th className="py-2.5 px-3 min-w-[130px]">Bedeutung (Tiếng Việt)</th>
               <th className="py-2.5 px-3 w-24">Plural</th>
-              <th className="py-2.5 px-3 min-w-[200px]">Beispielsatz (Câu ví dụ)</th>
+              <th className="py-2.5 px-3 min-w-[200px]">Beispielsatz (Ví dụ)</th>
               <th className="py-2.5 px-2 w-10 text-center"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-mist-border">
             {vocabList.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-6 text-slate-400">
+                <td colSpan={6} className="text-center py-8 text-fog-mist">
                   Chưa có từ vựng. Bấm "+ Wort" hoặc "Wörter ergänzen (AI)" để nạp từ mới.
                 </td>
               </tr>
             ) : (
               vocabList.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                <tr key={item.id} className="hover:bg-chalk-canvas transition-colors">
                   <td className="p-2">
                     <select
                       value={item.article}
                       onChange={(e) => handleUpdateWord(item.id, { article: e.target.value as ArticleType })}
-                      className={`w-full py-1 px-1.5 rounded font-bold text-xs border focus:outline-none ${
+                      className={`w-full py-1 px-1.5 rounded font-bold text-xs border focus:outline-none cursor-pointer ${
                         item.article === 'der'
-                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          ? 'bg-[#eff6ff] text-[#2563eb] border-[#bfdbfe]'
                           : item.article === 'die'
-                          ? 'bg-red-50 text-red-700 border-red-200'
+                          ? 'bg-[#fef2f2] text-[#dc2626] border-[#fecaca]'
                           : item.article === 'das'
-                          ? 'bg-green-50 text-green-700 border-green-200'
-                          : 'bg-white text-slate-500 border-slate-200'
+                          ? 'bg-[#f0fdf4] text-[#16a34a] border-[#bbf7d0]'
+                          : 'bg-paper-white text-slate-veil border-mist-border'
                       }`}
                     >
                       <option value="-">-</option>
@@ -160,7 +160,7 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
                       value={item.german}
                       placeholder="z.B. das Hobby"
                       onChange={(e) => handleUpdateWord(item.id, { german: e.target.value })}
-                      className="w-full p-1.5 rounded bg-slate-50/50 border border-slate-200 focus:border-purple-500 focus:bg-white focus:outline-none font-semibold text-slate-800"
+                      className="w-full p-1.5 rounded bg-chalk-canvas border border-mist-border focus:border-iris-bolt focus:bg-paper-white focus:outline-none font-semibold text-ink-charcoal"
                     />
                   </td>
                   <td className="p-2">
@@ -169,7 +169,7 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
                       value={item.translation}
                       placeholder="z.B. sở thích"
                       onChange={(e) => handleUpdateWord(item.id, { translation: e.target.value })}
-                      className="w-full p-1.5 rounded bg-slate-50/50 border border-slate-200 focus:border-purple-500 focus:bg-white focus:outline-none text-slate-700"
+                      className="w-full p-1.5 rounded bg-chalk-canvas border border-mist-border focus:border-iris-bolt focus:bg-paper-white focus:outline-none text-ink-charcoal"
                     />
                   </td>
                   <td className="p-2">
@@ -178,7 +178,7 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
                       value={item.plural}
                       placeholder="z.B. Hobbys"
                       onChange={(e) => handleUpdateWord(item.id, { plural: e.target.value })}
-                      className="w-full p-1.5 rounded bg-slate-50/50 border border-slate-200 focus:border-purple-500 focus:bg-white focus:outline-none text-slate-600"
+                      className="w-full p-1.5 rounded bg-chalk-canvas border border-mist-border focus:border-iris-bolt focus:bg-paper-white focus:outline-none text-slate-veil"
                     />
                   </td>
                   <td className="p-2">
@@ -187,17 +187,17 @@ export const WortschatzActivity: React.FC<{ block: Block }> = ({ block }) => {
                       value={item.example}
                       placeholder="z.B. Mein Hobby ist Schwimmen."
                       onChange={(e) => handleUpdateWord(item.id, { example: e.target.value })}
-                      className="w-full p-1.5 rounded bg-slate-50/50 border border-slate-200 focus:border-purple-500 focus:bg-white focus:outline-none text-slate-600"
+                      className="w-full p-1.5 rounded bg-chalk-canvas border border-mist-border focus:border-iris-bolt focus:bg-paper-white focus:outline-none text-slate-veil italic"
                     />
                   </td>
                   <td className="p-2 text-center">
                     <button
                       type="button"
                       onClick={() => handleDeleteWord(item.id)}
-                      className="p-1 text-slate-300 hover:text-red-600 rounded transition-colors"
+                      className="p-1 text-slate-veil hover:text-[#dc2626] rounded transition-colors cursor-pointer"
                       title="Xóa từ này"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={13} />
                     </button>
                   </td>
                 </tr>

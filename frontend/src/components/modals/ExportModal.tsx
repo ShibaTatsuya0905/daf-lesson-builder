@@ -15,24 +15,24 @@ export const ExportModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={closeExportModal}
     >
       <div
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+        className="bg-paper-white border border-mist-border rounded-[24px] w-full max-w-md shadow-md overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 px-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+        <div className="p-5 px-6 border-b border-mist-border flex items-center justify-between bg-chalk-canvas">
           <div>
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+            <h3 className="text-base font-bold text-ink-charcoal">
               Xuất tệp Bài giảng / Đề thi
             </h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Chọn định dạng và đối tượng sử dụng</p>
+            <p className="text-xs text-slate-veil">Chọn định dạng và đối tượng sử dụng</p>
           </div>
           <button
             type="button"
             onClick={closeExportModal}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-full text-slate-veil hover:text-ink-charcoal hover:bg-mist-border transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -40,52 +40,52 @@ export const ExportModal: React.FC = () => {
 
         <div className="p-6 space-y-5">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-veil mb-2">
               Đối tượng nhận tài liệu:
             </label>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => setTargetAudience('student')}
-                className={`p-3 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all ${
+                className={`p-3.5 rounded-lg border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                   isStudent
-                    ? 'border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold shadow-xs'
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt font-semibold shadow-xs'
+                    : 'border-mist-border bg-paper-white text-slate-veil hover:text-ink-charcoal hover:bg-chalk-canvas'
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
-                  <GraduationCap size={18} className={isStudent ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'} />
-                  {isStudent && <Check size={14} className="text-blue-600 dark:text-blue-400" />}
+                  <GraduationCap size={18} className={isStudent ? 'text-iris-bolt' : 'text-slate-veil'} />
+                  {isStudent && <Check size={14} className="text-iris-bolt" />}
                 </div>
                 <div>
-                  <div className="text-xs font-bold">Bản Học Sinh</div>
-                  <div className="text-[10px] opacity-75 font-normal">Ẩn đáp án & giải thích</div>
+                  <div className="text-xs font-bold text-ink-charcoal">Bản Học Sinh</div>
+                  <div className="text-[11px] opacity-80 font-normal">Ẩn đáp án & giải thích</div>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setTargetAudience('teacher')}
-                className={`p-3 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all ${
+                className={`p-3.5 rounded-lg border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                   !isStudent
-                    ? 'border-purple-500 bg-purple-50/60 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold shadow-xs'
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt font-semibold shadow-xs'
+                    : 'border-mist-border bg-paper-white text-slate-veil hover:text-ink-charcoal hover:bg-chalk-canvas'
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
-                  <BookOpen size={18} className={!isStudent ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'} />
-                  {!isStudent && <Check size={14} className="text-purple-600 dark:text-purple-400" />}
+                  <BookOpen size={18} className={!isStudent ? 'text-iris-bolt' : 'text-slate-veil'} />
+                  {!isStudent && <Check size={14} className="text-iris-bolt" />}
                 </div>
                 <div>
-                  <div className="text-xs font-bold">Bản Giáo Viên</div>
-                  <div className="text-[10px] opacity-75 font-normal">Hiện đáp án & lời giải</div>
+                  <div className="text-xs font-bold text-ink-charcoal">Bản Giáo Viên</div>
+                  <div className="text-[11px] opacity-80 font-normal">Hiện đáp án & lời giải</div>
                 </div>
               </button>
             </div>
           </div>
 
-          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <div className="space-y-2.5 pt-2 border-t border-mist-border">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-veil">
               Chọn định dạng xuất file:
             </label>
 
@@ -95,14 +95,14 @@ export const ExportModal: React.FC = () => {
                 exportService.exportToPdf(lessonInfo, blocks, isStudent);
                 closeExportModal();
               }}
-              className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 hover:bg-blue-50/40 dark:hover:bg-blue-950/20 text-left transition-all group shadow-xs"
+              className="w-full flex items-center gap-3.5 p-3.5 rounded-lg border border-mist-border hover:border-iris-bolt hover:bg-chalk-canvas text-left transition-colors cursor-pointer"
             >
-              <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <Printer size={20} />
+              <div className="p-2 rounded bg-lilac-wash text-iris-bolt">
+                <Printer size={18} />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Drucken / In ra PDF A4</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <h4 className="text-xs font-bold text-ink-charcoal">Drucken / In ra PDF A4</h4>
+                <p className="text-[11px] text-slate-veil">
                   {isStudent ? 'In đề thi giấy trắng phát cho học sinh làm bài' : 'In giáo án hoàn chỉnh kèm đáp án để giảng dạy'}
                 </p>
               </div>
@@ -114,14 +114,14 @@ export const ExportModal: React.FC = () => {
                 exportService.exportToWord(lessonInfo, blocks, isStudent);
                 closeExportModal();
               }}
-              className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-purple-500 hover:bg-purple-50/40 dark:hover:bg-purple-950/20 text-left transition-all group shadow-xs"
+              className="w-full flex items-center gap-3.5 p-3.5 rounded-lg border border-mist-border hover:border-iris-bolt hover:bg-chalk-canvas text-left transition-colors cursor-pointer"
             >
-              <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                <FileText size={20} />
+              <div className="p-2 rounded bg-lilac-wash text-iris-bolt">
+                <FileText size={18} />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Microsoft Word (.doc)</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">Xuất file văn bản chuẩn để chỉnh sửa thêm trên Word</p>
+                <h4 className="text-xs font-bold text-ink-charcoal">Microsoft Word (.doc)</h4>
+                <p className="text-[11px] text-slate-veil">Xuất file văn bản chuẩn để chỉnh sửa thêm trên Word</p>
               </div>
             </button>
           </div>

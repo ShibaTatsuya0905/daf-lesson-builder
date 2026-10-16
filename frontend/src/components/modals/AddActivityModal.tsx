@@ -144,18 +144,18 @@ const CATEGORIES = [
 
 const getCategoryIcon = (type: string) => {
   switch (type.toLowerCase()) {
-    case 'einstieg': return <Zap className="text-emerald-500" size={18} />;
-    case 'wortschatz': return <BookOpen className="text-purple-500" size={18} />;
-    case 'sprechen': return <MessageSquare className="text-blue-500" size={18} />;
-    case 'hören': return <Headphones className="text-orange-500" size={18} />;
-    case 'lesen': return <BookMarked className="text-cyan-500" size={18} />;
-    case 'schreiben': return <PenTool className="text-pink-500" size={18} />;
-    case 'quiz': return <HelpCircle className="text-amber-500" size={18} />;
-    case 'karteikarten': return <Layers className="text-indigo-500" size={18} />;
-    case 'partnerarbeit': return <Users className="text-teal-500" size={18} />;
-    case 'spiel': return <Gamepad2 className="text-rose-500" size={18} />;
-    case 'grammatik': return <Bookmark className="text-violet-500" size={18} />;
-    default: return <FileText className="text-slate-500" size={18} />;
+    case 'einstieg': return <Zap className="text-iris-bolt" size={16} />;
+    case 'wortschatz': return <BookOpen className="text-iris-bolt" size={16} />;
+    case 'sprechen': return <MessageSquare className="text-iris-bolt" size={16} />;
+    case 'hören': return <Headphones className="text-iris-bolt" size={16} />;
+    case 'lesen': return <BookMarked className="text-iris-bolt" size={16} />;
+    case 'schreiben': return <PenTool className="text-iris-bolt" size={16} />;
+    case 'quiz': return <HelpCircle className="text-iris-bolt" size={16} />;
+    case 'karteikarten': return <Layers className="text-iris-bolt" size={16} />;
+    case 'partnerarbeit': return <Users className="text-iris-bolt" size={16} />;
+    case 'spiel': return <Gamepad2 className="text-iris-bolt" size={16} />;
+    case 'grammatik': return <Bookmark className="text-iris-bolt" size={16} />;
+    default: return <FileText className="text-slate-veil" size={16} />;
   }
 };
 
@@ -202,47 +202,47 @@ export const AddActivityModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4"
       onClick={closeAddActivityModal}
     >
       <div
-        className="bg-white border border-slate-200 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden select-none"
+        className="bg-paper-white border border-mist-border rounded-[24px] w-full max-w-3xl max-h-[85vh] flex flex-col shadow-md overflow-hidden select-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 px-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="p-5 px-6 border-b border-mist-border flex items-center justify-between bg-chalk-canvas">
           <div>
-            <h3 className="text-base font-extrabold text-slate-800">
+            <h3 className="text-base font-bold text-ink-charcoal">
               Neue Aktivität hinzufügen
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-veil">
               Chọn một hoạt động chuyên biệt để đưa vào tiến trình bài dạy
             </p>
           </div>
           <button
             type="button"
             onClick={closeAddActivityModal}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-full text-slate-veil hover:text-ink-charcoal hover:bg-mist-border transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className="p-4 px-6 border-b border-slate-100 space-y-3 bg-white">
-          <div className="flex items-center gap-2.5 bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus-within:border-blue-500 focus-within:bg-white transition-all">
-            <Search size={16} className="text-slate-400 shrink-0" />
+        <div className="p-4 px-6 border-b border-mist-border space-y-3 bg-paper-white">
+          <div className="flex items-center gap-2.5 bg-chalk-canvas px-3.5 py-2 rounded border border-mist-border focus-within:border-iris-bolt transition-colors">
+            <Search size={15} className="text-slate-veil shrink-0" />
             <input
               type="text"
               placeholder="Search activities... (z.B. Wortschatz, Sprechen, Quiz...)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full text-xs bg-transparent text-slate-800 focus:outline-none"
+              className="w-full text-xs bg-transparent text-ink-charcoal focus:outline-none"
               autoFocus
             />
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => setSearchTerm('')}
-                className="text-xs text-slate-400 hover:text-slate-600"
+                className="text-xs text-slate-veil hover:text-ink-charcoal cursor-pointer"
               >
                 Clear
               </button>
@@ -255,10 +255,10 @@ export const AddActivityModal: React.FC = () => {
                 key={cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-iris-bolt text-paper-white shadow-xs'
+                    : 'bg-chalk-canvas text-slate-veil hover:text-ink-charcoal border border-mist-border'
                 }`}
               >
                 {cat}
@@ -267,9 +267,9 @@ export const AddActivityModal: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50/30">
+        <div className="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-chalk-canvas flex-1">
           {filteredActivities.length === 0 ? (
-            <div className="col-span-2 text-center py-12 text-slate-400 text-xs">
+            <div className="col-span-2 text-center py-12 text-fog-mist text-xs">
               Không tìm thấy hoạt động nào phù hợp với từ khóa "{searchTerm}".
             </div>
           ) : (
@@ -277,23 +277,23 @@ export const AddActivityModal: React.FC = () => {
               <div
                 key={act.title}
                 onClick={() => handleSelectActivity(act)}
-                className="group p-3.5 rounded-xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all cursor-pointer flex items-start gap-3.5"
+                className="group p-4 rounded-lg border border-mist-border bg-paper-white hover:border-iris-bolt hover:shadow-sm transition-all cursor-pointer flex items-start gap-3.5"
               >
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors shrink-0">
+                <div className="p-2 rounded bg-lilac-wash text-iris-bolt shrink-0">
                   {getCategoryIcon(act.type)}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1 mb-1">
-                    <h4 className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
+                    <h4 className="text-xs font-bold text-ink-charcoal group-hover:text-iris-bolt transition-colors truncate">
                       {act.title}
                     </h4>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-semibold shrink-0">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-chalk-canvas border border-mist-border text-slate-veil font-semibold shrink-0">
                       {act.defaultDuration} Min
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2 mb-2">
+                  <p className="text-[11px] text-slate-veil leading-relaxed line-clamp-2 mb-2">
                     {act.description}
                   </p>
 
@@ -301,7 +301,7 @@ export const AddActivityModal: React.FC = () => {
                     {act.tags.map((tag: string) => (
                       <span
                         key={tag}
-                        className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-100 text-slate-600"
+                        className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-chalk-canvas border border-mist-border text-slate-veil"
                       >
                         {tag}
                       </span>

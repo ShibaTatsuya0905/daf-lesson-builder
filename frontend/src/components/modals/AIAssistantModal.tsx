@@ -8,7 +8,7 @@ export const AIAssistantModal: React.FC = () => {
   const { isAIModalOpen, closeAIModal, lessonInfo, updateLessonInfo } = useLessonStore();
 
   const [topic, setTopic] = useState(lessonInfo.topic || 'Freizeit & Hobbys');
-  const [level, setLevel] = useState<CEFRLevel>(lessonInfo.level || 'A1');
+  const [level, setLevel] = useState<CEFRLevel>(lessonInfo.level as CEFRLevel || 'A1');
   const [duration, setDuration] = useState(45);
   const [focusAreas, setFocusAreas] = useState<string[]>(['Sprechen', 'Wortschatz', 'Schreiben']);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,24 +54,24 @@ export const AIAssistantModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4"
       onClick={closeAIModal}
     >
       <div
-        className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden select-none"
+        className="bg-paper-white border border-mist-border rounded-[24px] w-full max-w-lg shadow-md overflow-hidden select-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 px-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-purple-500/10 to-indigo-500/10">
+        <div className="p-5 px-6 border-b border-mist-border flex items-center justify-between bg-chalk-canvas">
           <div className="flex items-center gap-2">
-            <Sparkles className="text-purple-600" size={18} />
-            <h3 className="text-base font-extrabold text-slate-800">
+            <Sparkles className="text-iris-bolt" size={18} />
+            <h3 className="text-base font-bold text-ink-charcoal">
               DaF AI-Assistent
             </h3>
           </div>
           <button
             type="button"
             onClick={closeAIModal}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-full text-slate-veil hover:text-ink-charcoal hover:bg-mist-border transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -79,26 +79,26 @@ export const AIAssistantModal: React.FC = () => {
 
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
+            <label className="block text-xs font-semibold text-slate-veil mb-1">
               Chủ đề bài giảng (Thema)
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              className="w-full text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-purple-500 font-bold text-slate-800"
+              className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border focus:outline-none focus:border-iris-bolt font-semibold text-ink-charcoal"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label className="block text-xs font-semibold text-slate-veil mb-1">
                 Niveau (Trình độ)
               </label>
               <select
                 value={level}
                 onChange={(e) => setLevel(e.target.value as CEFRLevel)}
-                className="w-full text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-purple-500 font-bold text-slate-800"
+                className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border focus:outline-none focus:border-iris-bolt font-semibold text-ink-charcoal cursor-pointer"
               >
                 {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((lvl) => (
                   <option key={lvl} value={lvl}>{lvl}</option>
@@ -107,7 +107,7 @@ export const AIAssistantModal: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label className="block text-xs font-semibold text-slate-veil mb-1">
                 Dauer (Thời lượng phút)
               </label>
               <input
@@ -115,13 +115,13 @@ export const AIAssistantModal: React.FC = () => {
                 value={duration === 0 ? '' : duration}
                 onChange={(e) => setDuration(e.target.value === '' ? 0 : Number(e.target.value))}
                 placeholder="0"
-                className="w-full text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-purple-500 font-bold text-slate-800"
+                className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border focus:outline-none focus:border-iris-bolt font-semibold text-ink-charcoal"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-2">
+            <label className="block text-xs font-semibold text-slate-veil mb-2">
               Trọng tâm rèn luyện (Fokus)
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -132,14 +132,14 @@ export const AIAssistantModal: React.FC = () => {
                     key={area}
                     type="button"
                     onClick={() => toggleFocus(area)}
-                    className={`flex items-center justify-between p-2 rounded-xl text-xs font-semibold border transition-all ${
+                    className={`flex items-center justify-between p-2 rounded text-xs font-semibold border transition-all cursor-pointer ${
                       isChecked
-                        ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-sm'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                        ? 'border-iris-bolt bg-lilac-wash text-iris-bolt shadow-xs'
+                        : 'border-mist-border bg-paper-white text-slate-veil hover:text-ink-charcoal hover:bg-chalk-canvas'
                     }`}
                   >
                     <span>{area}</span>
-                    {isChecked && <Check size={14} className="text-purple-600" />}
+                    {isChecked && <Check size={14} className="text-iris-bolt" />}
                   </button>
                 );
               })}
@@ -147,11 +147,11 @@ export const AIAssistantModal: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 px-6 border-t border-slate-100 flex justify-end gap-2 bg-slate-50/60">
+        <div className="p-4 px-6 border-t border-mist-border flex justify-end gap-2 bg-chalk-canvas">
           <button
             type="button"
             onClick={closeAIModal}
-            className="text-xs font-semibold px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-200/60 transition-colors"
+            className="text-xs font-semibold px-4 py-2 text-slate-veil hover:text-ink-charcoal cursor-pointer"
           >
             Hủy
           </button>
@@ -159,7 +159,7 @@ export const AIAssistantModal: React.FC = () => {
             type="button"
             onClick={handleGenerate}
             disabled={isLoading}
-            className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-sm disabled:opacity-50 transition-all"
+            className="flex items-center gap-2 text-xs font-semibold px-6 py-2.5 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs disabled:opacity-50 transition-opacity cursor-pointer"
           >
             {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
             <span>Unterricht erstellen</span>

@@ -26,10 +26,10 @@ const GermanGrammarHighlight = Extension.create({
                   const word = match[1].toLowerCase();
                   const colorClass =
                     word === 'der'
-                      ? 'text-blue-600 font-bold bg-blue-50 px-1 rounded'
+                      ? 'text-[#2563eb] font-semibold bg-[#eff6ff] px-1 rounded'
                       : word === 'die'
-                      ? 'text-red-600 font-bold bg-red-50 px-1 rounded'
-                      : 'text-green-600 font-bold bg-green-50 px-1 rounded';
+                      ? 'text-[#dc2626] font-semibold bg-[#fef2f2] px-1 rounded'
+                      : 'text-[#16a34a] font-semibold bg-[#f0fdf4] px-1 rounded';
 
                   decorations.push(
                     Decoration.inline(pos + match.index, pos + match.index + match[0].length, {
@@ -62,7 +62,7 @@ interface TipTapEditorProps {
 export const TipTapEditor = ({
   content,
   onChange,
-  minHeight = 'min-h-[90px]',
+  minHeight = 'min-h-[100px]',
 }: TipTapEditorProps) => {
   const editor = useEditor({
     extensions: [StarterKit, GermanGrammarHighlight],
@@ -72,7 +72,7 @@ export const TipTapEditor = ({
     },
     editorProps: {
       attributes: {
-        class: `prose prose-sm focus:outline-none p-3 w-full ${minHeight} text-slate-800`,
+        class: `prose prose-sm focus:outline-none p-3.5 w-full ${minHeight} text-ink-charcoal font-sans bg-paper-white leading-relaxed`,
       },
     },
   });
@@ -84,25 +84,25 @@ export const TipTapEditor = ({
   if (!editor) return null;
 
   return (
-    <div className="border border-slate-200 rounded-lg bg-white overflow-hidden shadow-xs">
-      <div className="flex flex-wrap items-center justify-between gap-1 px-3 py-1.5 bg-slate-50 border-b border-slate-200">
-        <div className="flex items-center gap-1">
-          <span className="text-[11px] font-medium text-slate-400 uppercase mr-1">Umlaute:</span>
+    <div className="border border-mist-border rounded-lg bg-paper-white overflow-hidden shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-1 px-3 py-2 bg-chalk-canvas border-b border-mist-border">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold text-slate-veil uppercase mr-1">Umlaute:</span>
           {['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'].map((char) => (
             <button
               key={char}
               type="button"
               onClick={() => insertSpecialChar(char)}
-              className="w-6 h-6 flex items-center justify-center text-xs font-semibold rounded bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 shadow-sm transition-colors"
+              className="w-7 h-7 flex items-center justify-center text-xs font-semibold rounded bg-paper-white border border-mist-border hover:border-iris-bolt text-ink-charcoal shadow-xs transition-colors cursor-pointer"
             >
               {char}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>der</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block"></span>die</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>das</span>
+        <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-veil">
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#2563eb] inline-block"></span>der</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#dc2626] inline-block"></span>die</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#16a34a] inline-block"></span>das</span>
         </div>
       </div>
       <EditorContent editor={editor} />

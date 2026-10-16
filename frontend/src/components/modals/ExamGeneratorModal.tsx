@@ -171,40 +171,40 @@ export const ExamGeneratorModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 select-none">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden">
-        <div className="p-4 px-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-transparent">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4 select-none">
+      <div className="bg-paper-white border border-mist-border rounded-[24px] w-full max-w-xl shadow-md overflow-hidden">
+        <div className="p-5 px-6 border-b border-mist-border flex items-center justify-between bg-chalk-canvas">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded bg-lilac-wash text-iris-bolt flex items-center justify-center">
               <FileText size={18} />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Thiết Kế Đề Thi Theo Kỹ Năng Chuẩn</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Tạo đề thi chuyên biệt cho từng kỹ năng (Viết, Đọc, Nghe, Nói, Ngữ pháp)</p>
+              <h3 className="text-base font-bold text-ink-charcoal">Thiết Kế Đề Thi Theo Kỹ Năng Chuẩn</h3>
+              <p className="text-xs text-slate-veil">Tạo đề thi chuyên biệt cho từng kỹ năng (Viết, Đọc, Nghe, Nói, Ngữ pháp)</p>
             </div>
           </div>
-          <button onClick={closeExamModal} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"><X size={18} /></button>
+          <button onClick={closeExamModal} className="p-1.5 rounded-full text-slate-veil hover:text-ink-charcoal hover:bg-mist-border cursor-pointer"><X size={18} /></button>
         </div>
 
-        <div className="flex border-b border-slate-100 dark:border-slate-800 p-1.5 bg-slate-100 dark:bg-slate-800/80 mx-6 mt-4 rounded-2xl">
+        <div className="flex border-b border-mist-border p-1 bg-chalk-canvas mx-6 mt-4 rounded-full">
           <button
             type="button"
             onClick={() => setInputMode('random')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${inputMode === 'random' ? 'bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer ${inputMode === 'random' ? 'bg-paper-white text-iris-bolt shadow-xs' : 'text-slate-veil hover:text-ink-charcoal'}`}
           >
             <GraduationCap size={14}/> Theo Chứng Chỉ Thi
           </button>
           <button
             type="button"
             onClick={() => setInputMode('prompt')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-xl transition-all ${inputMode === 'prompt' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${inputMode === 'prompt' ? 'bg-paper-white text-ink-charcoal shadow-xs' : 'text-slate-veil hover:text-ink-charcoal'}`}
           >
             ✍️ Theo Chủ Đề Riêng
           </button>
           <button
             type="button"
             onClick={() => setInputMode('file')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-xl transition-all ${inputMode === 'file' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${inputMode === 'file' ? 'bg-paper-white text-ink-charcoal shadow-xs' : 'text-slate-veil hover:text-ink-charcoal'}`}
           >
             📄 Dựa Trên File Sách
           </button>
@@ -212,89 +212,89 @@ export const ExamGeneratorModal: React.FC = () => {
 
         <form onSubmit={handleGenerateExam} className="p-6 space-y-4">
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+            <label className="block text-xs font-semibold text-slate-veil">
               Chọn Modul (Kỹ năng) bạn muốn tạo đề:
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => selectSingleSkill('Leseverstehen')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                className={`p-2.5 rounded border text-xs font-semibold transition-all text-left flex items-center justify-between cursor-pointer ${
                   parts.length === 1 && parts[0] === 'Leseverstehen'
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt'
+                    : 'border-mist-border bg-paper-white text-ink-charcoal hover:bg-chalk-canvas'
                 }`}
               >
                 <span>📖 Đọc hiểu (Lesen)</span>
-                {parts.length === 1 && parts[0] === 'Leseverstehen' && <Check size={14} className="text-blue-600" />}
+                {parts.length === 1 && parts[0] === 'Leseverstehen' && <Check size={14} className="text-iris-bolt" />}
               </button>
 
               <button
                 type="button"
                 onClick={() => selectSingleSkill('Hörverstehen')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                className={`p-2.5 rounded border text-xs font-semibold transition-all text-left flex items-center justify-between cursor-pointer ${
                   parts.length === 1 && parts[0] === 'Hörverstehen'
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt'
+                    : 'border-mist-border bg-paper-white text-ink-charcoal hover:bg-chalk-canvas'
                 }`}
               >
                 <span>🎧 Nghe hiểu (Hören)</span>
-                {parts.length === 1 && parts[0] === 'Hörverstehen' && <Check size={14} className="text-blue-600" />}
+                {parts.length === 1 && parts[0] === 'Hörverstehen' && <Check size={14} className="text-iris-bolt" />}
               </button>
 
               <button
                 type="button"
                 onClick={() => selectSingleSkill('Schreiben')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                className={`p-2.5 rounded border text-xs font-semibold transition-all text-left flex items-center justify-between cursor-pointer ${
                   parts.length === 1 && parts[0] === 'Schreiben'
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt'
+                    : 'border-mist-border bg-paper-white text-ink-charcoal hover:bg-chalk-canvas'
                 }`}
               >
                 <span>✍️ Viết (Schreiben)</span>
-                {parts.length === 1 && parts[0] === 'Schreiben' && <Check size={14} className="text-blue-600" />}
+                {parts.length === 1 && parts[0] === 'Schreiben' && <Check size={14} className="text-iris-bolt" />}
               </button>
 
               <button
                 type="button"
                 onClick={() => selectSingleSkill('Sprechen')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                className={`p-2.5 rounded border text-xs font-semibold transition-all text-left flex items-center justify-between cursor-pointer ${
                   parts.length === 1 && parts[0] === 'Sprechen'
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt'
+                    : 'border-mist-border bg-paper-white text-ink-charcoal hover:bg-chalk-canvas'
                 }`}
               >
                 <span>🗣 Nói (Sprechen)</span>
-                {parts.length === 1 && parts[0] === 'Sprechen' && <Check size={14} className="text-blue-600" />}
+                {parts.length === 1 && parts[0] === 'Sprechen' && <Check size={14} className="text-iris-bolt" />}
               </button>
 
               <button
                 type="button"
                 disabled={!isTelc}
                 onClick={() => selectSingleSkill('Sprachbausteine')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                className={`p-2.5 rounded border text-xs font-semibold transition-all text-left flex items-center justify-between ${
                   !isTelc
-                    ? 'opacity-35 cursor-not-allowed bg-slate-100 dark:bg-slate-800/40 text-slate-400 border-slate-200 dark:border-slate-800'
+                    ? 'opacity-40 cursor-not-allowed bg-chalk-canvas text-fog-mist border-mist-border'
                     : parts.length === 1 && parts[0] === 'Sprachbausteine'
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt cursor-pointer'
+                    : 'border-mist-border bg-paper-white text-ink-charcoal hover:bg-chalk-canvas cursor-pointer'
                 }`}
               >
                 <span>📐 Ngữ pháp (TELC)</span>
-                {isTelc && parts.length === 1 && parts[0] === 'Sprachbausteine' && <Check size={14} className="text-blue-600" />}
+                {isTelc && parts.length === 1 && parts[0] === 'Sprachbausteine' && <Check size={14} className="text-iris-bolt" />}
               </button>
 
               <button
                 type="button"
                 onClick={() => selectSingleSkill('Full')}
-                className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between ${
+                className={`p-2.5 rounded border text-xs font-semibold transition-all text-left flex items-center justify-between cursor-pointer ${
                   parts.length > 1
-                    ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 shadow-xs'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300'
+                    ? 'border-iris-bolt bg-lilac-wash text-iris-bolt'
+                    : 'border-mist-border bg-paper-white text-ink-charcoal hover:bg-chalk-canvas'
                 }`}
               >
                 <span>📑 Đề Tổng hợp</span>
-                {parts.length > 1 && <Check size={14} className="text-blue-600" />}
+                {parts.length > 1 && <Check size={14} className="text-iris-bolt" />}
               </button>
             </div>
           </div>
@@ -302,31 +302,31 @@ export const ExamGeneratorModal: React.FC = () => {
           {inputMode === 'random' && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Kỳ thi / Chứng chỉ</label>
-                <select value={certificate} onChange={(e) => handleCertificateChange(e.target.value)} className="w-full text-xs p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-bold focus:outline-none">
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Kỳ thi / Chứng chỉ</label>
+                <select value={certificate} onChange={(e) => handleCertificateChange(e.target.value)} className="w-full text-xs p-2.5 rounded bg-chalk-canvas text-ink-charcoal border border-mist-border font-semibold focus:outline-none cursor-pointer">
                   {CERTIFICATES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Chủ đề đề thi</label>
-                <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Alltag, Beruf, Umwelt..." className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold focus:outline-none" />
+                <label className="block text-xs font-semibold text-slate-veil mb-1">Chủ đề đề thi</label>
+                <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Alltag, Beruf, Umwelt..." className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt" />
               </div>
             </div>
           )}
 
           {inputMode === 'prompt' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Chủ đề đề thi (Thema)</label>
-              <input type="text" required value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="z.B. Urlaub, Wohnen..." className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold" />
+              <label className="block text-xs font-semibold text-slate-veil mb-1">Chủ đề đề thi (Thema)</label>
+              <input type="text" required value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="z.B. Urlaub, Wohnen..." className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none focus:border-iris-bolt" />
             </div>
           )}
 
           {inputMode === 'file' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Tài liệu nguồn (File PDF/Ảnh)</label>
-              <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-xl bg-blue-50/30 dark:bg-blue-950/20 hover:bg-blue-50/70 cursor-pointer text-center">
-                <UploadCloud size={28} className="text-blue-600 dark:text-blue-400 mb-1" />
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{examFiles.length > 0 ? `Đã chọn: ${examFiles.map(f => f.name).join(', ')}` : 'Nhấp để chọn file PDF/Ảnh'}</span>
+              <label className="block text-xs font-semibold text-slate-veil mb-1">Tài liệu nguồn (File PDF/Ảnh)</label>
+              <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-mist-border rounded-lg bg-chalk-canvas hover:border-iris-bolt cursor-pointer text-center transition-colors">
+                <UploadCloud size={24} className="text-iris-bolt mb-1" />
+                <span className="text-xs font-semibold text-ink-charcoal">{examFiles.length > 0 ? `Đã chọn: ${examFiles.map(f => f.name).join(', ')}` : 'Nhấp để chọn file PDF/Ảnh'}</span>
                 <input type="file" multiple className="hidden" accept=".pdf,image/*" onChange={(e) => { if (e.target.files) setExamFiles(Array.from(e.target.files)); }} />
               </label>
             </div>
@@ -334,28 +334,28 @@ export const ExamGeneratorModal: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label className="block text-xs font-semibold text-slate-veil mb-1">
                 {isTestDaF ? 'Bậc năng lực TestDaF' : 'Trình độ (Niveau)'}
               </label>
-              <select value={level} onChange={(e) => setLevel(e.target.value)} className="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold focus:outline-none">
+              <select value={level} onChange={(e) => setLevel(e.target.value)} className="w-full text-xs p-2.5 rounded bg-chalk-canvas border border-mist-border font-semibold text-ink-charcoal focus:outline-none cursor-pointer">
                 {availableLevels.map((lvl) => <option key={lvl} value={lvl}>{lvl}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Thời gian thi chuẩn (Phút)</label>
-              <input type="number" readOnly value={duration} className="w-full text-xs p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 font-bold text-slate-500 focus:outline-none cursor-not-allowed" />
+              <label className="block text-xs font-semibold text-slate-veil mb-1">Thời gian thi chuẩn (Phút)</label>
+              <input type="number" readOnly value={duration} className="w-full text-xs p-2.5 rounded bg-mist-border/40 border border-mist-border font-semibold text-slate-veil focus:outline-none cursor-not-allowed" />
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-2.5">
-            <Layers size={18} className="text-blue-600 dark:text-blue-400 shrink-0" />
-            <span>Hệ thống sẽ biên soạn chính xác <strong>100% đúng kỹ năng đã chọn</strong> theo đề thi {certificate} {level}.</span>
+          <div className="p-3 rounded bg-chalk-canvas border border-mist-border text-xs text-slate-veil flex items-center gap-2.5">
+            <Layers size={16} className="text-iris-bolt shrink-0" />
+            <span>Hệ thống biên soạn chuẩn CEFR <strong>100% đúng kỹ năng đã chọn</strong> theo đề thi {certificate} {level}.</span>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={closeExamModal} disabled={isLoading} className="text-xs font-semibold px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40">Hủy</button>
-            <button type="submit" disabled={isLoading} className="flex items-center gap-2 text-xs font-bold px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm disabled:opacity-50 transition-all">
-              {isLoading ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+            <button type="button" onClick={closeExamModal} disabled={isLoading} className="text-xs font-semibold px-4 py-2 text-slate-veil hover:text-ink-charcoal disabled:opacity-40 cursor-pointer">Hủy</button>
+            <button type="submit" disabled={isLoading} className="flex items-center gap-2 text-xs font-semibold px-6 py-2.5 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs disabled:opacity-50 transition-opacity cursor-pointer">
+              {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
               <span>{isLoading ? 'AI đang biên soạn đề thi...' : `Tạo Đề Thi Ngay (${duration} Phút)`}</span>
             </button>
           </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Scissors, UploadCloud, Download, Loader2, FileCheck } from 'lucide-react';
+import { X, Scissors, UploadCloud, Download, Loader2 } from 'lucide-react';
 import { useLessonStore } from '../../store/useLessonStore';
 
 export const PdfCutterModal: React.FC = () => {
@@ -61,26 +61,26 @@ export const PdfCutterModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-charcoal/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={closePdfCutterModal}
     >
       <div
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+        className="bg-paper-white border border-mist-border rounded-[24px] w-full max-w-md shadow-md overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 px-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-purple-50/50 dark:bg-purple-950/20">
+        <div className="p-5 px-6 border-b border-mist-border flex items-center justify-between bg-chalk-canvas">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center justify-center">
-              <Scissors size={18} />
+            <div className="w-8 h-8 rounded-full bg-lilac-wash text-iris-bolt flex items-center justify-center">
+              <Scissors size={16} />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Cắt File PDF Nhanh</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Trích xuất đoạn trang sách cần dùng và tải về ngay</p>
+              <h3 className="text-base font-bold text-ink-charcoal">Cắt File PDF Nhanh</h3>
+              <p className="text-xs text-slate-veil">Trích xuất đoạn trang sách cần dùng và tải về máy</p>
             </div>
           </div>
           <button
             onClick={closePdfCutterModal}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-full text-slate-veil hover:text-ink-charcoal hover:bg-mist-border transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -88,15 +88,15 @@ export const PdfCutterModal: React.FC = () => {
 
         <form onSubmit={handleSliceAndDownload} className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-veil mb-1.5">
               Chọn File PDF gốc (Hỗ trợ cả sách dày 50MB - 100MB):
             </label>
-            <label className="flex flex-col items-center justify-center p-5 border-2 border-dashed border-purple-200 dark:border-purple-800 rounded-2xl bg-purple-50/30 dark:bg-purple-950/10 hover:bg-purple-50/60 dark:hover:bg-purple-950/30 cursor-pointer transition-all text-center">
-              <UploadCloud size={32} className="text-purple-600 dark:text-purple-400 mb-1" />
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+            <label className="flex flex-col items-center justify-center p-5 border-2 border-dashed border-mist-border hover:border-iris-bolt rounded-lg bg-chalk-canvas cursor-pointer transition-colors text-center">
+              <UploadCloud size={28} className="text-iris-bolt mb-1" />
+              <span className="text-xs font-bold text-ink-charcoal">
                 {file ? file.name : 'Nhấp để chọn file PDF'}
               </span>
-              <span className="text-[10px] text-slate-400 mt-0.5">
+              <span className="text-[11px] text-slate-veil mt-0.5">
                 {file ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : 'PDF giáo trình hoặc tài liệu'}
               </span>
               <input
@@ -112,9 +112,9 @@ export const PdfCutterModal: React.FC = () => {
             </label>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+          <div className="grid grid-cols-2 gap-3 bg-chalk-canvas p-3.5 rounded-lg border border-mist-border">
             <div>
-              <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-veil mb-1">
                 Từ trang:
               </label>
               <input
@@ -123,11 +123,11 @@ export const PdfCutterModal: React.FC = () => {
                 required
                 value={startPage}
                 onChange={(e) => setStartPage(Number(e.target.value))}
-                className="w-full text-xs p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold focus:outline-none focus:border-purple-500"
+                className="w-full text-xs p-2 rounded bg-paper-white border border-mist-border font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-veil mb-1">
                 Đến trang:
               </label>
               <input
@@ -136,7 +136,7 @@ export const PdfCutterModal: React.FC = () => {
                 required
                 value={endPage}
                 onChange={(e) => setEndPage(Number(e.target.value))}
-                className="w-full text-xs p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold focus:outline-none focus:border-purple-500"
+                className="w-full text-xs p-2 rounded bg-paper-white border border-mist-border font-bold text-ink-charcoal focus:outline-none focus:border-iris-bolt"
               />
             </div>
           </div>
@@ -146,23 +146,23 @@ export const PdfCutterModal: React.FC = () => {
               type="button"
               disabled={isProcessing}
               onClick={closePdfCutterModal}
-              className="text-xs font-semibold px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
+              className="text-xs font-semibold px-4 py-2 text-slate-veil hover:text-ink-charcoal disabled:opacity-50 cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isProcessing || !file}
-              className="flex items-center gap-1.5 text-xs font-bold px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-sm disabled:opacity-50 transition-all"
+              className="flex items-center gap-1.5 text-xs font-semibold px-6 py-2.5 rounded-full bg-iris-bolt hover:opacity-90 text-paper-white shadow-xs disabled:opacity-50 transition-opacity cursor-pointer"
             >
               {isProcessing ? (
                 <>
-                  <Loader2 size={15} className="animate-spin" />
+                  <Loader2 size={14} className="animate-spin" />
                   <span>Đang cắt trang...</span>
                 </>
               ) : (
                 <>
-                  <Download size={15} />
+                  <Download size={14} />
                   <span>Cắt & Tải File Về</span>
                 </>
               )}
