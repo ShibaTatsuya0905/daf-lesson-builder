@@ -1,325 +1,929 @@
-# 🇩🇪 DaF Lesson Builder & AI Exam Generator
+🇩🇪 DaF Lesson Builder & AI Exam Generator
+
+An AI-powered lesson planning and German exam generation platform built for DaF educators.
+
+
+
+
+
+
+
+
+
+
+
+Overview
+
+DaF Lesson Builder combines AI-assisted lesson planning, structured German examination generation, interactive speaking practice, and textbook processing in one web application.
+
+The platform is designed around a key principle: AI generates educational content, while application-defined blueprints and validation rules control the examination structure.
+
+Rather than relying on unrestricted text generation, the system uses predefined examination specifications, structured data contracts, and validation stages to reduce inconsistent questions, incorrect item counts, and malformed exam content.
+
+Supported examination providers
+
+Provider
+
+Levels / Results
+
+Examination skills
+
+Goethe-Zertifikat
+
+A1–C2
+
+Lesen, Hören, Schreiben, Sprechen
+
+telc Deutsch
+
+A1–C2
+
+Lesen, Hören, Schreiben, Sprechen, Sprachbausteine where applicable
+
+ÖSD
+
+A1–C2
+
+Lesen, Hören, Schreiben, Sprechen
+
+TestDaF
+
+TDN 3–5
+
+Lesen, Hören, Schreiben, Sprechen
+
+Important: Examination formats vary by certificate, level, and delivery mode. The application's blueprints should be checked against current official specifications before being described as fully official or certification-compliant.
+
+Table of Contents
+
+Core Architecture
+
+Generation Pipeline
+
+Blueprint Coverage
+
+Key Features
+
+Screenshots
+
+Technology Stack
+
+Project Structure
+
+Requirements
+
+Installation
+
+Environment Configuration
+
+API Reference
+
+Administrator Account
+
+Troubleshooting
+
+Production Build
+
+License
+
+Core Architecture
+
+The problem
+
+Large language models can generate convincing educational content, but they may also invent examination sections, change question counts, produce inconsistent answer keys, or ignore level-specific requirements.
+
+DaF Lesson Builder addresses these challenges through a structured generation pipeline.
+
+Component
+
+Responsibility
+
+Master Blueprints
+
+Define examination structure, task types, item counts, timing, and scoring rules
+
+Exam Skeleton Engine
+
+Creates a structured exam template before AI generation
+
+DACH Case Engine
+
+Develops contextual scenarios based on everyday life, education, and work in Germany, Austria, and Switzerland
+
+AI Content Synthesis
+
+Generates passages, questions, distractors, transcripts, and sample answers
+
+Exam Validator
+
+Checks schema compliance, question counts, answer consistency, and configured grading rules
+
+Worksheet Renderer
+
+Produces teacher and student versions of examination materials
+
+Design principles
+
+Structure before generation: Create the examination skeleton before requesting content from the AI.
+
+Controlled AI output: Restrict generated content to explicitly permitted fields.
+
+Validation before rendering: Reject or repair invalid output before displaying the final examination.
+
+Contextual diversity: Use scenario metadata and fingerprints to reduce repetitive case generation.
+
+Separation of concerns: Keep examination rules, AI orchestration, persistence, and user-interface rendering in separate modules.
+
+Generation Pipeline
+
+flowchart TD
+    A["Master Examination Blueprints"] --> B["Exam Skeleton Engine"]
+    B --> C["DACH Case Engine"]
+    C --> D["Gemini Content Generation"]
+    D --> E["Exam Validation"]
+    E --> F{"Validation Result"}
+    F -->|Pass| G["Worksheet Rendering"]
+    F -->|Fail| H["Retry or Repair"]
+    H --> D
+    G --> I["Teacher Version"]
+    G --> J["Student Version"]
+
+    classDef input fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef process fill:#f3e8ff,stroke:#9333ea,color:#581c87
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef retry fill:#ffedd5,stroke:#ea580c,color:#9a3412
+
+    class A input
+    class B,C,D,E process
+    class G,I,J success
+    class H retry
+
+The validation and repair process uses configurable retry limits. Successful output is rendered into teacher-facing and student-facing worksheets.
+
+Blueprint Coverage
+
+The current project documentation describes 24 master blueprint configurations.
+
+Provider
+
+Level / Mode
+
+Skills
+
+Documented duration
+
+Goethe-Zertifikat
+
+A1
+
+Lesen, Hören, Schreiben, Sprechen
+
+80 min
+
+Goethe-Zertifikat
+
+A2
+
+Lesen, Hören, Schreiben, Sprechen
+
+105 min
+
+Goethe-Zertifikat
+
+B1
+
+Lesen, Hören, Schreiben, Sprechen
+
+180 min
+
+Goethe-Zertifikat
+
+B2
+
+Lesen, Hören, Schreiben, Sprechen
+
+195 min
+
+Goethe-Zertifikat
+
+C1
+
+Lesen, Hören, Schreiben, Sprechen
+
+215 min
+
+Goethe-Zertifikat
+
+C2
+
+Lesen, Hören, Schreiben, Sprechen
+
+220 min
+
+telc Deutsch
+
+A1
+
+Lesen, Hören, Schreiben, Sprechen
+
+60 min
+
+telc Deutsch
+
+A2
+
+Lesen, Hören, Schreiben, Sprechen
+
+80 min
+
+telc Deutsch
+
+B1
+
+Lesen, Sprachbausteine, Hören, Schreiben, Sprechen
+
+165 min
+
+telc Deutsch
+
+B2
+
+Lesen, Sprachbausteine, Hören, Schreiben, Sprechen
+
+165 min
+
+telc Deutsch
+
+C1
+
+Lesen, Sprachbausteine, Hören, Schreiben, Sprechen
+
+180 min
+
+telc Deutsch
+
+C2
+
+Lesen, Sprachbausteine, Hören, Schreiben, Sprechen
+
+180 min
+
+ÖSD
+
+A1
+
+Lesen, Hören, Schreiben, Sprechen
+
+80 min
+
+ÖSD
+
+A2
+
+Lesen, Hören, Schreiben, Sprechen
+
+95 min
+
+ÖSD
+
+B1
+
+Lesen, Hören, Schreiben, Sprechen
+
+180 min
+
+ÖSD
+
+B2
+
+Lesen, Hören, Schreiben, Sprechen
+
+150 min
+
+ÖSD
+
+C1
+
+Lesen, Hören, Schreiben, Sprechen
+
+170 min
+
+ÖSD
+
+C2
+
+Lesen, Hören, Schreiben, Sprechen
+
+190 min
+
+TestDaF
+
+Paper-based
+
+Lesen, Hören, Schreiben, Sprechen
+
+155 min
+
+TestDaF
+
+Digital
+
+Lesen, Hören, Schreiben, Sprechen
+
+150 min
+
+The TestDaF configurations support result targets TDN 3, TDN 4, and TDN 5.
+
+Coverage note: The table summarizes the configurations described by the project. Exact task counts, timing, scoring, and the number of distinct blueprint records should be verified against examBlueprints.ts and the current examination specifications.
+
+Key Features
+
+1. AI Examination Generator
+
+Generate individual skill modules or complete mock examinations.
+
+Select a provider, level, skill, and examination mode.
+
+Generate reading passages, listening transcripts, questions, distractors, and answer keys.
+
+Support configured grammar-focused exercises and telc Sprachbausteine.
+
+Validate generated output against the selected blueprint.
+
+Render student worksheets without answer keys and teacher worksheets with solutions.
+
+2. Virtual Oral Examination Room
+
+Practice German speaking through an interactive browser-based examination experience.
+
+Capture spoken responses using the Web Speech API where supported.
+
+Transcribe speech and integrate it into the configured AI conversation workflow.
+
+Generate candidate prompt sheets with structured Leitpunkte.
+
+Provide rubric-based feedback on grammar, vocabulary, and other configured assessment criteria.
+
+Support iterative speaking practice.
+
+Browser speech recognition and speech synthesis depend on browser support, operating-system voices, and microphone permissions. Automated feedback should be treated as practice assistance rather than an official examination result.
+
+3. Drag-and-Drop Lesson Planner
+
+Build structured German lessons through a visual Kanban-style workflow.
+
+Available pedagogical blocks include:
+
+Einstieg and warm-up activities
+
+Wortschatz and vocabulary practice
+
+Grammatik exercises
+
+Lesen and Hören activities
+
+Schreiben and Sprechen tasks
+
+Interactive quizzes and flashcards
+
+Additional capabilities include lesson time budgeting, rich-text editing, and German-character support for ä, ö, ü, and ß.
+
+4. Textbook and PDF Processing
+
+Turn textbook material into reusable lesson resources.
+
+Detect table-of-contents entries and chapter page ranges.
+
+Extract relevant PDF page ranges.
+
+Analyze reading passages and vocabulary.
+
+Organize extracted vocabulary with articles, plurals, translations, and contextual examples.
+
+Integrate extracted material into lesson-planning workflows.
+
+5. Worksheet Export
+
+Prepare classroom-ready examination materials.
+
+Mode
+
+Contents
+
+Teacher
+
+Questions, answer keys, listening transcripts, and configured instructional guidance
+
+Student
+
+Questions and blank response fields without teacher-only solutions
+
+The application includes print-oriented A4 layouts and document export functionality, subject to the implemented export service.
+
+Screenshots
+
+Add screenshots of the actual running application to the repository so visitors can evaluate the interface before cloning the project.
+
+Recommended layout:
+
+Examination Generator
+
+Speaking Simulator
+
+docs/images/exam-generator.png
+
+docs/images/speaking-simulator.png
+
+Certificate selection, level selection, and exam configuration
+
+Speaking interface, transcript, and feedback
+
+Lesson Planner
+
+Worksheet Preview
+
+docs/images/lesson-planner.png
+
+docs/images/worksheet-preview.png
+
+Kanban board with lesson blocks
+
+Teacher/student worksheet preview
+
+Once the images have been added, display them using:
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 18" />
-  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-  <img src="https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/Express.js-4.x-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js" />
-  <img src="https://img.shields.io/badge/Prisma-6.x-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma ORM" />
-  <img src="https://img.shields.io/badge/TailwindCSS-3.x-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Google%20Gemini-Generative%20AI-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Google Gemini AI" />
-  <img src="https://img.shields.io/badge/License-MIT-F7DF1E?style=for-the-badge" alt="MIT License" />
+  <img src="docs/images/exam-generator.png" width="49%" alt="AI examination generator" />
+  <img src="docs/images/speaking-simulator.png" width="49%" alt="Virtual speaking examination" />
 </p>
 
-> **An enterprise-grade pedagogical platform and deterministic CEFR exam generation engine for German language educators (DaF), test-prep institutions, and examination boards.**  
-> Enforces **Master Blueprints** for **Goethe-Zertifikat**, **telc**, **ÖSD**, and **TestDaF** across levels **A1 to C2** and **TDN 3 to 5**.
+<p align="center">
+  <img src="docs/images/lesson-planner.png" width="49%" alt="Drag-and-drop lesson planner" />
+  <img src="docs/images/worksheet-preview.png" width="49%" alt="Worksheet preview" />
+</p>
 
----
+Use genuine application screenshots rather than mockups if the README is intended to demonstrate implemented functionality.
 
-## 📑 Table of Contents
+Technology Stack
 
-- [The Core Problem & Architecture](#-the-core-problem--architecture)
-- [System Pipeline Flow](#-system-pipeline-flow)
-- [Official Blueprint Coverage Matrix](#-official-blueprint-coverage-matrix)
-- [Key Features](#-key-features)
-- [Screenshots & UI Previews](#-screenshots--ui-previews)
-- [Tech Stack Breakdown](#-tech-stack-breakdown)
-- [Project Directory Structure](#-project-directory-structure)
-- [System & Browser Requirements](#-system--browser-requirements)
-- [Installation & Quickstart](#-installation--quickstart)
-- [Environment Variables (.env)](#-environment-variables-env)
-- [REST API Endpoints](#-rest-api-endpoints)
-- [Super Admin Credentials](#-super-admin-credentials)
-- [Troubleshooting & FAQs](#-troubleshooting--faqs)
-- [Production Deployment](#-production-deployment)
-- [License](#-license)
-
----
-
-## 💡 The Core Problem & Architecture
-
-Standard LLM text generation prompts fail when applied to accredited European language certifications (CEFR). When asked to *"create a B1 German test"*, generative models routinely hallucinate non-existent sections, invent inaccurate question counts, alter point scales, and violate test duration guidelines.
-
-**DaF Lesson Builder solves this by treating test specifications as System Law:**
-- **Deterministic Skeletons:** Blueprint engines dictate the exact number of parts (*Teile*), item counts, durations, and answer mechanics.
-- **Content-Only Generation:** The AI operates exclusively as a text copywriter, generating German passages, questions, distractors, and model answers within locked structural parameters.
-- **Quality Gates:** A multi-tier validation gate intercepts every AI payload, verifying schema compliance, answer consistency, item counts, and CEFR grading rubrics before rendering.
-
----
-
-## 🔄 System Pipeline Flow
-
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│                        1. MASTER BLUEPRINTS                            │
-│   Hardcoded parameters: Provider, Level, Skill, Teil, Item Count,      │
-│   Duration, Scoring Rubrics, Generation Rules                          │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        2. EXAM SKELETON ENGINE                         │
-│   Constructs deterministic task contracts & strict field whitelists    │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        3. DACH-CONTEXT CASE ENGINE                     │
-│   Discovers real-world scenarios in Germany, Austria, and Switzerland  │
-│   with SHA-256 semantic fingerprinting to prevent repetition           │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        4. CONTENT SYNTHESIS (GEMINI)                   │
-│   Generates passages, audio transcripts, items, and answer keys        │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        5. 6-LAYER EXAM VALIDATOR                       │
-│   Validates: Structure • Item Counts • Distractors • Correct Answers   │
-│   • CEFR Rubrics • Auto-healing of alternate field names               │
-│                 ┌─────────────────┴─────────────────┐                  │
-│                 ▼                                   ▼                  │
-│              [PASS]                              [FAIL]                │
-│                 │                                   │                  │
-│                 │                           Retry / Repair (max 3)     │
-└─────────────────┼──────────────────────────────────────────────────────┘
-                  ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   6. DUAL-MODE WORKSHEET RENDERING                     │
-│   Teacher worksheet (with answer keys) / Student blank answer sheet    │
-└────────────────────────────────────────────────────────────────────────┘
-📊 Official Blueprint Coverage Matrix
-The engine provides 24 official blueprints:
-Provider	Level	Skills Included	Total Parts (Teile)	Total Items	Duration
-Goethe-Zertifikat	A1	Lesen, Hören, Schreiben, Sprechen	11	35 items + 2 tasks	80 min
-Goethe-Zertifikat	A2	Lesen, Hören, Schreiben, Sprechen	13	40 items + 2 tasks	105 min
-Goethe-Zertifikat	B1	Lesen, Hören, Schreiben, Sprechen	15	60 items + 6 tasks	180 min
-Goethe-Zertifikat	B2	Lesen, Hören, Schreiben, Sprechen	13	60 items + 4 tasks	195 min
-Goethe-Zertifikat	C1	Lesen, Hören, Schreiben, Sprechen	12	60 items + 4 tasks	215 min
-Goethe-Zertifikat	C2	Lesen, Hören, Schreiben, Sprechen	11	60 items + 4 tasks	220 min
-telc Deutsch	A1	Lesen, Hören, Schreiben, Sprechen	11	30 items + 2 tasks	60 min
-telc Deutsch	A2	Lesen, Hören, Schreiben, Sprechen	10	30 items + 1 task	80 min
-telc Deutsch	B1	Lesen, Sprachbausteine, Hören, Schreiben, Sprechen	12	60 items + 1 letter	165 min
-telc Deutsch	B2	Lesen, Sprachbausteine, Hören, Schreiben, Sprechen	12	60 items + 1 letter	165 min
-telc Deutsch	C1	Lesen, Sprachbausteine, Hören, Schreiben, Sprechen	11	55 items + 1 task	180 min
-telc Deutsch	C2	Lesen, Sprachbausteine, Hören, Schreiben, Sprechen	11	55 items + 1 task	180 min
-ÖSD	A1	Lesen, Hören, Schreiben, Sprechen	11	30 items + 2 tasks	80 min
-ÖSD	A2	Lesen, Hören, Schreiben, Sprechen	8	25 items + 1 task	95 min
-ÖSD	B1	Lesen, Hören, Schreiben, Sprechen	15	60 items + 6 tasks	180 min
-ÖSD	B2	Lesen, Hören, Schreiben, Sprechen	11	40 items + 2 tasks	150 min
-ÖSD	C1	Lesen, Hören, Schreiben, Sprechen	10	40 items + 2 tasks	170 min
-ÖSD	C2	Lesen, Hören, Schreiben, Sprechen	11	40 items + 2 tasks	190 min
-TestDaF (Paper)	TDN 3/4/5	Lesen, Hören, Schreiben, Sprechen	14	55 items + 8 tasks	155 min
-TestDaF (Digital)	TDN 3/4/5	Lesen, Hören, Schreiben, Sprechen	23	64 items + 9 tasks	150 min
-✨ Key Features
-1. 🎯 Examination Generator
-Skills On-Demand: Generate single-skill modules (e.g., Reading only, Writing only, Listening only, Grammar only) or complete consolidated exams (Full Mock Test).
-Format Integrity: telc-only Sprachbausteine are automatically locked and hidden for Goethe, ÖSD, and TestDaF.
-Audio Synthesizer: Includes authentic German audio tracks generated via SpeechSynthesis with variable playback speeds (0.8x, 0.9x real-test, 1.0x standard).
-2. 🎙️ Virtual Oral Exam Room (Mündliche Prüfung)
-Voice-first examination room running natively in the browser.
-Real-time transcription captures spoken German and sends it to the AI proctor.
-Generates official Kandidatenblätter (candidate prompt sheets) with structured Leitpunkte.
-Official CEFR Rubric Scoring: 25 points across 4 criteria (Total: 100 points, Pass threshold: 60) with error corrections highlighting grammar, pronunciation, and vocabulary mistakes.
-3. 📋 Drag-and-Drop Lesson Planner (Kanban Workflow)
-Assemble complete lesson plans using specialized pedagogical cards: Warm-up (Einstieg), Vocabulary (Wortschatz), Grammar (Grammatik), Speaking (Sprechen), Listening (Hören), Reading (Lesen), Writing (Schreiben), Interactive Quizzes, Flashcards.
-Smart time budgeting with real-time feedback on curriculum pace.
-TipTap ProseMirror Rich-Text Editor with German umlaut hotkeys (ä, ö, ü, ß) and color-coding for articles (der - blue, die - red, das - green).
-4. 📚 Smart Textbook & PDF Ingestion Engine
-Automated TOC Detection: Upload multi-page textbook PDFs; AI identifies chapter titles, themes, and page ranges.
-Deep Lexical Parsing: Converts reading pages into tabular vocabulary with articles, plurals, translations, and contextual examples.
-Client-side PDF page slicer for extracting targeted lesson chapters without server upload overhead.
-5. 🖨️ Dual-Mode Worksheet Export
-Teacher View: Includes answer keys, listening transcripts, and instructional guidance.
-Student View: Automatically hides answers, formatting exercises with clean blank response fields.
-One-click print-ready DIN A4 PDF generation and Microsoft Word (.doc) export.
-📸 Screenshots & UI Previews
-Master Blueprint Exam Generator	Virtual Oral Exam Room
-(Select skills, certificates, and CEFR levels)	(Real-time voice simulation with live transcription)
-Kanban Lesson Planner	Dual-Mode Worksheet Preview
-(Drag-and-drop pedagogical blocks)	(Student view with clean blank answer sheets)
-🛠️ Tech Stack Breakdown
 Frontend
-Framework: React 18, TypeScript, Vite
-Styling: Tailwind CSS (Dark/Light mode support)
-Component Primitives: Lucide React Icons
-Drag & Drop: @dnd-kit/core, @dnd-kit/sortable
-Rich Text Engine: TipTap Editor (ProseMirror based)
-State Management: Zustand with client-side persistence
-Speech Engine: Web Speech API (SpeechRecognition + SpeechSynthesisUtterance)
+
+Technology
+
+Purpose
+
+React 18
+
+Component-based user interface
+
+TypeScript 5
+
+Static typing
+
+Vite 5
+
+Development server and build tooling
+
+Tailwind CSS 3
+
+Responsive styling and theme support
+
+Zustand
+
+Client-side state management
+
+Lucide React
+
+Interface icons
+
+@dnd-kit
+
+Drag-and-drop lesson planning
+
+TipTap / ProseMirror
+
+Rich-text editing
+
+Web Speech API
+
+Browser speech recognition and synthesis
+
 Backend
-Runtime: Node.js 18+, Express.js, TypeScript
-Database & ORM: Prisma ORM, MySQL (compatible with PostgreSQL/SQLite)
-AI Integration: Google Generative AI SDK (@google/generative-ai), Google AI File Manager
-File & PDF Processing: pdf-lib, multer
-Security & Auth: JSON Web Tokens (Access + Refresh tokens), Bcrypt password hashing, Nodemailer
-📂 Project Directory Structure
-code
-Text
+
+Technology
+
+Purpose
+
+Node.js 18+
+
+JavaScript runtime
+
+Express.js 4
+
+REST API
+
+TypeScript
+
+Backend type safety
+
+Prisma ORM 6
+
+Database access and schema management
+
+MySQL
+
+Relational persistence
+
+Google Generative AI SDK
+
+AI content generation
+
+pdf-lib
+
+PDF processing
+
+Multer
+
+File upload handling
+
+JSON Web Tokens
+
+Authentication
+
+bcrypt
+
+Password hashing
+
+Nodemailer
+
+Email delivery for configured authentication workflows
+
+Database compatibility: MySQL is the documented setup. PostgreSQL and SQLite require compatible Prisma configuration, schema adjustments, and migration testing before they can be considered supported.
+
+Project Structure
+
 GIAOAN_V2/
 ├── backend/
 │   ├── prisma/
-│   │   ├── schema.prisma             # Database schema (User, Lesson, Block, Book, CaseMemory)
-│   │   └── seed.ts                   # Initial textbook dataset
+│   │   ├── schema.prisma
+│   │   └── seed.ts
 │   ├── src/
 │   │   ├── common/
-│   │   │   ├── base.repository.ts    # Generic CRUD repository
-│   │   │   └── prisma.ts             # Prisma singleton instance
+│   │   │   ├── base.repository.ts
+│   │   │   └── prisma.ts
 │   │   ├── middlewares/
-│   │   │   └── auth.middleware.ts    # JWT verification & role authorization
+│   │   │   └── auth.middleware.ts
 │   │   ├── modules/
-│   │   │   ├── admin/                # Admin management, users, and textbook curriculum
+│   │   │   ├── admin/
 │   │   │   ├── ai/
-│   │   │   │   ├── ai.controller.ts  # AI endpoints
-│   │   │   │   ├── ai.routes.ts      # AI route declarations
-│   │   │   │   ├── ai.service.ts     # Core LLM prompt orchestration & fallback pool
-│   │   │   │   ├── caseEngine.ts     # DACH scenario discovery & semantic hashing
-│   │   │   │   ├── examBlueprintEngine.ts # Skeleton builder & contract resolver
-│   │   │   │   ├── examBlueprints.ts # 24 official master exam blueprints
-│   │   │   │   ├── examSchema.ts     # Blueprint TypeScript interfaces
-│   │   │   │   └── examValidator.ts  # 6-layer exam validation & auto-healing
-│   │   │   ├── auth/                 # Authentication, OTP registration & recovery
-│   │   │   ├── book/                 # Textbook ingestion APIs
-│   │   │   └── lesson/               # Lesson plan builder & autosave persistence
-│   │   └── index.ts                  # Express server entry point
-│   ├── package.json
-│   └── tsconfig.json
-│
+│   │   │   │   ├── ai.controller.ts
+│   │   │   │   ├── ai.routes.ts
+│   │   │   │   ├── ai.service.ts
+│   │   │   │   ├── caseEngine.ts
+│   │   │   │   ├── examBlueprintEngine.ts
+│   │   │   │   ├── examBlueprints.ts
+│   │   │   │   ├── examSchema.ts
+│   │   │   │   └── examValidator.ts
+│   │   │   ├── auth/
+│   │   │   ├── book/
+│   │   │   └── lesson/
+│   │   └── index.ts
+│   └── package.json
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── activities/           # Pedagogical block components (Wortschatz, Lesen...)
-│   │   │   ├── admin/                # Admin Portal Dashboard
-│   │   │   ├── Builder/              # Kanban Drag-and-Drop Canvas & BlockItem
-│   │   │   ├── Editor/               # TipTap Editor with German syntax highlighting
-│   │   │   ├── layout/               # Header, Sidebar, QuickToolbar
-│   │   │   ├── modals/               # Exam generator, oral simulator, PDF scanner modals
-│   │   │   └── preview/              # DocumentPreview (Student & Teacher worksheets)
-│   │   ├── services/                 # API Client, AI Service, Export Service
-│   │   ├── store/                    # Zustand stores (useLessonStore, useAuthStore)
-│   │   ├── types/                    # Frontend TypeScript interfaces
-│   │   ├── App.tsx                   # Main application layout
-│   │   └── main.tsx                  # React entry point
+│   │   │   ├── activities/
+│   │   │   ├── admin/
+│   │   │   ├── Builder/
+│   │   │   ├── Editor/
+│   │   │   ├── layout/
+│   │   │   ├── modals/
+│   │   │   └── preview/
+│   │   ├── services/
+│   │   ├── store/
+│   │   ├── types/
+│   │   ├── App.tsx
+│   │   └── main.tsx
 │   ├── package.json
 │   └── vite.config.ts
+├── docs/
+│   └── images/
 └── README.md
-💻 System & Browser Requirements
-Supported Browsers: Google Chrome or Microsoft Edge (required for native Web Speech API recognition).
-Microphone Access: Ensure microphone permissions are granted for the oral exam simulator.
-Operating System TTS Voices: Install native German voice packages (e.g., German - Stefan/Katja/Google Deutsch) in Windows or macOS settings for audio playback.
-🚀 Installation & Quickstart
-1. Clone Repository
-code
-Bash
+
+Requirements
+
+Before installation, ensure the following tools are available:
+
+Node.js 18 or later
+
+npm
+
+MySQL server
+
+Google Gemini API key
+
+Git
+
+For speaking simulation, use a compatible version of Google Chrome or Microsoft Edge and grant microphone permission when prompted.
+
+Installation
+
+1. Clone the repository
+
 git clone https://github.com/ShibaTatsuya0905/daf-lesson-builder.git
 cd daf-lesson-builder
-2. Backend Setup & Database Migration
-Navigate to the backend directory and install dependencies:
-code
-Bash
+
+2. Configure the backend
+
 cd backend
 npm install
-Configure your environment variables by creating .env (See the Environment Variables section below). Generate the Prisma Client and migrate your database:
-code
-Bash
+
+Create a .env file in the backend/ directory using the configuration described below.
+
+Create the database in MySQL, then generate Prisma Client and synchronize the schema:
+
 npx prisma generate
 npx prisma db push
-(Optional) Seed sample textbook curriculum:
-code
-Bash
+
+If the project includes the optional seed script:
+
 npx tsx prisma/seed.ts
-Start the backend development server:
-code
-Bash
+
+Start the backend using the development command configured by the project:
+
 npx tsx src/index.ts
-The backend will boot at http://localhost:3000.
-3. Frontend Setup
-Open a new terminal and enter the frontend directory:
-code
-Bash
+
+Expected local API address:
+
+http://localhost:3000
+
+3. Start the frontend
+
+Open a second terminal:
+
 cd frontend
 npm install
-Start the Vite development server:
-code
-Bash
 npm run dev
-The application interface will be live at http://localhost:5173.
-🔐 Environment Variables (.env)
-Create a .env file in the backend/ directory with the following variables:
-code
-Env
-# Server Port
+
+Open the Vite development URL shown in the terminal, typically:
+
+http://localhost:5173
+
+Setup note: These commands assume the existing project scripts, dependencies, database schema, and environment configuration match the repository. If a command differs from your package.json, follow the scripts actually defined in the project.
+
+Environment Configuration
+
+Create backend/.env:
+
+# Server
 PORT=3000
 
-# Database Connection String (MySQL example)
+# MySQL
 DATABASE_URL="mysql://root:password@localhost:3306/daf_lesson_builder"
 
-# JWT Authentication Secrets
-JWT_ACCESS_SECRET="your_jwt_access_secret_here"
+# JWT authentication
+JWT_ACCESS_SECRET="replace_with_a_long_random_secret"
 JWT_ACCESS_EXPIRES_IN="15m"
-JWT_REFRESH_SECRET="your_jwt_refresh_secret_here"
+JWT_REFRESH_SECRET="replace_with_another_long_random_secret"
 JWT_REFRESH_EXPIRES_IN="7d"
 
-# Google Gemini API Key (Obtain from https://aistudio.google.com/)
-GEMINI_API_KEY="AIzaSy...your_gemini_api_key..."
+# Google Gemini
+GEMINI_API_KEY="your_gemini_api_key"
 
-# Optional: SMTP Configuration for OTP password resets
+# Optional SMTP configuration
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
 SMTP_USER="your-email@gmail.com"
-SMTP_PASS="your-app-password"
+SMTP_PASS="your-email-app-password"
 
-# Default Super Admin account credentials (auto-created on initial run)
+# Optional initial administrator configuration
 ADMIN_EMAIL="admin@daf.de"
-ADMIN_PASSWORD="Admin@DaF#2026_SecureKey!"
-📡 REST API Endpoints
-Method	Endpoint	Description	Auth Required
-POST	/api/auth/register-with-otp	Register teacher account with OTP	No
-POST	/api/auth/login	Login and receive access/refresh tokens	No
-POST	/api/auth/refresh	Refresh expired access tokens	No
-GET	/api/auth/me	Fetch authenticated user profile	Yes
-POST	/api/ai/generate-exam	Generate certified CEFR exam from Blueprint	Optional
-POST	/api/ai/simulate-speaking	Interactive turn-by-turn oral exam dialogue	Optional
-POST	/api/ai/scan-document	Deep-scan PDF documents for lesson blocks	Optional
-POST	/api/ai/slice-pdf	Extract specific page ranges from a PDF	No
-GET	/api/lessons	List saved lesson plans	Yes
-POST	/api/lessons	Create and save a new lesson plan	Yes
-PUT	/api/lessons/:id	Update an existing lesson plan	Yes
-GET	/api/admin/books	List official textbook curricula	Admin Only
-POST	/api/admin/books/detect-toc	Auto-detect TOC from textbook PDF	Admin Only
-POST	/api/admin/books/auto-ingest	Auto-ingest textbook lesson pages	Admin Only
-👑 Super Admin Credentials
-The backend automatically seeds a default Super Administrator account on its initial run:
-Email: admin@daf.de
-Password: Admin@DaF#2026_SecureKey!
-Log in with this account to open the Admin Dashboard, manage registered instructors, adjust curriculum metadata, and batch-ingest textbooks.
-❓ Troubleshooting & FAQs
-1. "AI Engine: Quota Exceeded (429 Too Many Requests)"
-Cause: Google Gemini Free Tier limits requests to 15 RPM (Requests Per Minute) and 1,500 RPD (Requests Per Day).
-Solution: The built-in executeWithFallback mechanism automatically applies exponential backoff (1.5s, 3s, 6s) and falls back to alternate models in the pool (gemini-flash-lite-latest). If quota persists, wait 60 seconds or use an API key with tier-1 billing.
-2. "The provided value for the column is too long: context" (Prisma Error P2000)
-Cause: MySQL defaults Prisma String fields to VARCHAR(191), which can be exceeded by detailed C1/C2 context descriptions.
-Solution: The AI service automatically truncates strings using .slice(0, 190) as a defensive measure. To store full-length texts in production, add @db.Text to the context, roles, and options fields in backend/prisma/schema.prisma and run npx prisma db push.
-3. Speech Recognition not picking up audio
-Cause: Browser permissions are blocked, or an unsupported browser is in use.
-Solution: Ensure you are using Google Chrome or Microsoft Edge, grant microphone access, and verify that your system input device is working correctly.
-📦 Production Deployment
-To compile and bundle both services for production:
-code
-Bash
-# Build Backend
+ADMIN_PASSWORD="replace_with_a_unique_strong_password"
+
+Security recommendations
+
+Never commit .env files, API keys, SMTP credentials, or production secrets.
+
+Keep .env.example populated with placeholder values only.
+
+Generate unique, unpredictable JWT secrets.
+
+Change any default administrator password immediately.
+
+Ensure administrator initialization is safe to run repeatedly.
+
+Do not expose private API keys in frontend environment variables.
+
+API Reference
+
+The following endpoints describe the documented API surface. Verify request schemas, response payloads, and middleware configuration in the backend before integrating external clients.
+
+Method
+
+Endpoint
+
+Description
+
+POST
+
+/api/auth/register-with-otp
+
+Register a teacher account using OTP
+
+POST
+
+/api/auth/login
+
+Authenticate and obtain tokens
+
+POST
+
+/api/auth/refresh
+
+Refresh an access token
+
+GET
+
+/api/auth/me
+
+Retrieve the authenticated user profile
+
+POST
+
+/api/ai/generate-exam
+
+Generate examination content
+
+POST
+
+/api/ai/simulate-speaking
+
+Run an interactive speaking session
+
+POST
+
+/api/ai/scan-document
+
+Analyze a document for lesson resources
+
+POST
+
+/api/ai/slice-pdf
+
+Extract a PDF page range
+
+GET
+
+/api/lessons
+
+Retrieve saved lesson plans
+
+POST
+
+/api/lessons
+
+Create a lesson plan
+
+PUT
+
+/api/lessons/:id
+
+Update a lesson plan
+
+GET
+
+/api/admin/books
+
+Retrieve textbook curriculum data
+
+POST
+
+/api/admin/books/detect-toc
+
+Detect textbook table-of-contents entries
+
+POST
+
+/api/admin/books/auto-ingest
+
+Process textbook material
+
+Authentication and authorization requirements should be confirmed in the corresponding route and middleware definitions.
+
+Administrator Account
+
+If the backend implements automatic administrator seeding, configure the initial administrator through environment variables or the project's documented initialization process.
+
+For security, this README does not publish a reusable default administrator password.
+
+If you are deploying a fresh instance:
+
+Set a unique administrator email and password.
+
+Confirm that the initialization process creates the account as expected.
+
+Sign in and verify access to administrator functions.
+
+Rotate credentials before exposing the application to other users.
+
+Disable public access to any setup-only administrative mechanism.
+
+Troubleshooting
+
+Gemini quota errors
+
+Symptom: The AI service returns HTTP 429 or reports quota exhaustion.
+
+Possible causes:
+
+Requests exceed the current model or project quota.
+
+The selected model is unavailable under the active API plan.
+
+Billing, request limits, or daily quotas restrict generation.
+
+Recommended checks:
+
+Review the quota and usage information for your Google AI project.
+
+Confirm that the selected model is available to your API key.
+
+Use bounded exponential backoff for temporary rate limits.
+
+Fall back only to models supported by the configured API and account.
+
+Return a clear error if every configured model fails.
+
+Retries cannot overcome an exhausted quota by themselves.
+
+Prisma error P2000
+
+Symptom: A value exceeds the supported length of a database column.
+
+Recommended checks:
+
+Inspect the affected field in schema.prisma.
+
+Use an appropriate text column for long passages and contextual descriptions.
+
+Generate the updated Prisma Client.
+
+Apply and verify the database schema changes.
+
+For MySQL, a field may use a mapping such as:
+
+context String? @db.Text
+
+Only apply this mapping to fields whose actual data requirements justify it.
+
+Speech recognition does not work
+
+Possible causes:
+
+Microphone access is blocked.
+
+The browser does not support the required recognition API.
+
+The selected input device is unavailable.
+
+The operating system lacks an appropriate German speech or text-to-speech voice.
+
+Recommended checks:
+
+Open the application in a supported browser.
+
+Grant microphone permission.
+
+Verify the selected input device.
+
+Test the browser's speech recognition and synthesis support.
+
+Check German language and voice settings.
+
+Production Build
+
+Build the backend using the script defined in backend/package.json:
+
 cd backend
 npm run build
 
-# Build Frontend
+Build the frontend:
+
 cd ../frontend
 npm run build
-Production-optimized client assets will be emitted to frontend/dist/.
-📄 License
-This project is licensed under the terms of the MIT License.
-Copyright (c) 2026 ShibaTatsuya0905. All rights reserved.
-You are free to use, modify, distribute, and integrate this software into both non-profit and commercial educational platforms.
+
+The frontend production bundle is typically emitted to:
+
+frontend/dist/
+
+Before deploying, verify the production database connection, environment variables, authentication configuration, CORS policy, upload limits, and AI quota handling.
+
+Do not use the development server as a production hosting strategy.
+
+License
+
+This project is distributed under the MIT License.
+
+See the LICENSE file for the complete terms.
+
+Copyright © 2026 ShibaTatsuya0905.
